@@ -21,6 +21,7 @@ import { Subscription, SubscriptionCreate, SubscriptionUpdate } from '@/features
 import MonthlySpendWidget from '@/components/MonthlySpendWidget'
 import SpendLineChart from '@/components/SpendLineChart'
 import { SubscriptionList } from '@/features/subscriptions/components/SubscriptionList'
+import KPICards from '@/components/KPICards'
 
 // Категории можно получать динамически из подписок, но оставим дефолтный набор + "All"
 const defaultCategories = ['Entertainment', 'Productivity', 'Utilities', 'Education', 'Business', 'Health']
@@ -290,18 +291,10 @@ export default function Dashboard() {
             </div>
           </PopoverContent>
         </Popover>
-
-        <div className="flex gap-4">
-          <Card className="rounded-xl px-6 py-3 flex flex-col items-center bg-zinc-100">
-            <span className="text-xs text-zinc-500">Total / month</span>
-            <span className="font-bold text-lg text-zinc-900">${totalMonthly.toFixed(2)}</span>
-          </Card>
-          <Card className="rounded-xl px-6 py-3 flex flex-col items-center bg-zinc-100">
-            <span className="text-xs text-zinc-500">Total / year</span>
-            <span className="font-bold text-lg text-zinc-900">${totalYearly.toFixed(2)}</span>
-          </Card>
-        </div>
       </div>
+
+      {/* KPI Cards */}
+      <KPICards />
 
       {/* Widgets row */}
       <div className="grid md:grid-cols-2 gap-4">

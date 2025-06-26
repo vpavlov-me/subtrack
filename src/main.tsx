@@ -8,6 +8,7 @@ import { SubscriptionsProvider } from '@/features/subscriptions/SubscriptionsPro
 import { useSupabaseAuthSync } from '@/hooks/useSupabaseAuthSync'
 import { Toaster } from 'sonner'
 import { TeamsProvider } from '@/features/teams/TeamsProvider'
+import { CurrencyProvider } from '@/features/currency/CurrencyProvider'
 
 function AuthSync({ children }: { children: React.ReactNode }) {
   // Синхронизация токена в Supabase происходит уже внутри контекста AuthKit
@@ -25,7 +26,9 @@ function Providers({ children }: { children: React.ReactNode }) {
         <ThemeProvider>
           <SubscriptionsProvider>
             <TeamsProvider>
-              {children}
+              <CurrencyProvider>
+                {children}
+              </CurrencyProvider>
             </TeamsProvider>
           </SubscriptionsProvider>
           <Toaster richColors position="top-right" ariaLive="assertive" />
