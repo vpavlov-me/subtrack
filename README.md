@@ -168,7 +168,7 @@ SubTrack — это минималистичный менеджер подпис
 flowchart TD
   subgraph Frontend (Vite + React)
     A[React SPA]
-    A -->|fetch| B[(Supabase REST])
+    A -->|fetch| B[(Supabase REST)]
     A -->|SSO| C[WorkOS AuthKit]
     A -->|Realtime| D[(Supabase Realtime)]
   end
@@ -197,9 +197,4 @@ src/
   components/
     ui/            # атомарные компоненты (shadcn)
     marketing/     # лендинг/B2B блоки
-  features/
-    subscriptions/ # доменная логика, SubscriptionsProvider
-  hooks/           # общие хуки (auth sync и т.п.)
-  lib/             # supabase client, theme, utils
-  pages/           # маршруты React Router
 ```
