@@ -12,8 +12,8 @@
 Скопируйте URL и anon key из Settings > API:
 
 ```env
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_SUPABASE_URL=https://supabase.com/dashboard/project/ikhjhrogspcqgkejrczx/settings/api-keys
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlraGpocm9nc3BjcWdrZWpyY3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0MDQxMDIsImV4cCI6MjA2Mjk4MDEwMn0.F4iY9daotLhCsgf5swyju6lZqp7GfEVlmGhhqvdj2WE
 ```
 
 ## 3. Применение миграций

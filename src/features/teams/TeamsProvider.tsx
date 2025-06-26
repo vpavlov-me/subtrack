@@ -18,7 +18,7 @@ export function TeamsProvider({ children }: { children: ReactNode }) {
     setTeams(list)
     if (!currentId && list.length) setCurrentId(list[0].id)
   }
-  useEffect(() => { void reload() }, [])
+  useEffect(() => { void reload() }, [reload])
 
   const currentTeam = teams.find(t=>t.id===currentId)
 

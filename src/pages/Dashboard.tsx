@@ -132,8 +132,6 @@ export default function Dashboard() {
   const [importData, setImportData] = useState('')
 
   const filtered = filteredSubscriptions
-  const totalMonthly = totals.monthly
-  const totalYearly = totals.yearly
 
   function handleAdd(sub: SubscriptionFormValues) {
     const { nextPayment, ...rest } = sub

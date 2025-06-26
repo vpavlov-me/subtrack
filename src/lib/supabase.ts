@@ -9,6 +9,7 @@ function createMockClient() {
   type QueryResult<T = unknown> = { data: T; error: unknown | null }
 
   const ok: QueryResult = { data: null, error: null }
+  const okArray: QueryResult<unknown[]> = { data: [], error: null }
 
   const query = {
     select: () => query,
@@ -18,13 +19,27 @@ function createMockClient() {
     delete: () => query,
     eq: () => query,
     single: () => ok,
+    // Для select().single()
+    then: (cb: (arg: QueryResult) => unknown) => Promise.resolve(cb(ok)),
   }
 
   return {
-    from: () => query,
+    from: () => ({
+      select: () => okArray,
+      order: () => okArray,
+      insert: () => ok,
+      update: () => ok,
+      delete: () => ok,
+      eq: () => okArray,
+      single: () => ok,
+    }),
     auth: {
       setSession: async () => {},
       signOut: async () => {},
+      getUser: async () => ({ data: { user: null } }),
+    },
+    functions: {
+      invoke: async () => ({ data: null, error: null }),
     },
   } as unknown as ReturnType<typeof createClient>
 }

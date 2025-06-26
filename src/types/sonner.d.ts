@@ -1,5 +1,5 @@
 declare module 'sonner' {
-  import { FC, ReactNode } from 'react'
+  import { FC } from 'react'
 
   export interface ToasterProps {
     position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
