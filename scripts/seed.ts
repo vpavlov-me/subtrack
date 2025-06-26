@@ -6,9 +6,23 @@ const url = process.env.SUPABASE_URL!
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const supabase = createClient(url, key)
 
+// Генерируем случайный пароль
+function generateSecurePassword(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*'
+  let password = ''
+  for (let i = 0; i < 12; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return password
+}
+
 async function run() {
   const email = 'demo@subtrack.dev'
-  const password = 'demo123'
+  const password = generateSecurePassword()
+
+  console.log('Creating demo user with email:', email)
+  console.log('Generated password:', password)
+  console.log('⚠️  Save this password securely!')
 
   // create user
   const { data: user } = await supabase.auth.admin.createUser({ email, password, email_confirm: true })
@@ -29,7 +43,9 @@ async function run() {
 
   await supabase.from('reminder_prefs').upsert({ user_id: userId, days_before: 3, channel: 'email' })
 
-  console.log('Seed completed')
+  console.log('✅ Seed completed successfully')
+  console.log('📧 Demo user email:', email)
+  console.log('🔑 Demo user password:', password)
 }
 
-run() 
+run().catch(console.error) 

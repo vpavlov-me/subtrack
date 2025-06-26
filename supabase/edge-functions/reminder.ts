@@ -1,66 +1,148 @@
 // @ts-nocheck
-// deno-lint-ignore-file no-explicit-any
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { zonedTimeToUtc, utcToZonedTime, format as fmt } from 'https://cdn.skypack.dev/date-fns-tz@3.0.0'
+// Supabase Edge Function: reminder
+// Schedules: Set up via supabase dashboard: cron 0 9 * * * (09:00 UTC daily)
+// Purpose: send payment reminder emails for subscriptions occurring in next 3 days
 
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+// Environment variables are automatically injected by Supabase when deployed
+// For local testing via `supabase functions serve`, provide them in .env
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
-const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-const supabase = createClient(SUPABASE_URL, SERVICE_ROLE, {
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+// Admin client (service role) – required for RLS bypass & sending emails
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false },
 })
 
-// util to convert amount to profile currency
-async function convert(amount: number, from: string, to: string) {
-  if (from === to) return amount
-  const { data } = await supabase
-    .from('currency_rates')
-    .select('rate')
-    .eq('base', from)
-    .eq('target', to)
-    .single()
-  if (!data) return amount
-  return Number((amount * data.rate).toFixed(2))
+interface Subscription {
+  id: string
+  user_id: string
+  name: string
+  price: number
+  currency: string
+  next_payment_date: string
+  category?: string
 }
 
-export const handler = async () => {
-  // fetch prefs joined with subscriptions + profiles
-  const { data: rows, error } = await supabase.rpc('fetch_due_reminders') // assume SQL RPC (create separately)
-  if (error) {
-    console.error(error)
-    return new Response('error', { status: 500 })
-  }
+interface UserProfile {
+  user_id: string
+  full_name?: string
+  email?: string
+}
 
-  const grouped: Record<string, any[]> = {}
-  for (const row of rows) {
-    const { user_id } = row
-    if (!grouped[user_id]) grouped[user_id] = []
-    grouped[user_id].push(row)
-  }
+interface ReminderPref {
+  user_id: string
+  days_before: number
+  channel: 'email' | 'slack'
+}
 
-  for (const [userId, list] of Object.entries(grouped)) {
-    const { data: profile } = await supabase.from('profiles').select('subscription_status, customer_id, subscription_id').eq('user_id', userId).single()
-    const pref = list[0]
-    const userTz = pref.tz || 'UTC'
+export const handler = async (_req: Request): Promise<Response> => {
+  try {
+    const today = new Date()
+    const threeDaysFromNow = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000)
 
-    const lines: string[] = []
-    let total = 0
-    for (const sub of list) {
-      const nextUtc = zonedTimeToUtc(sub.next_payment_date, sub.tz)
-      const nextLocal = utcToZonedTime(nextUtc, userTz)
-      const converted = await convert(sub.amount, sub.currency, pref.profile_currency)
-      total += converted
-      lines.push(`• ${sub.name} – ${fmt(nextLocal, 'yyyy-MM-dd', { timeZone: userTz })} (${pref.profile_currency} ${converted})`)
+    // Get subscriptions due in next 3 days
+    const { data: subscriptions, error: subError } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .gte('next_payment_date', today.toISOString().split('T')[0])
+      .lte('next_payment_date', threeDaysFromNow.toISOString().split('T')[0])
+
+    if (subError) {
+      console.error('Failed to fetch subscriptions:', subError)
+      return new Response(JSON.stringify({ error: 'Failed to fetch subscriptions' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      })
     }
 
-    const subject = `SubTrack: платежей через ${pref.days_before} дн. на сумму ${pref.profile_currency} ${total.toFixed(2)}`
-    const content = `Здравствуйте!\n\n${lines.join('\n')}\n\n– SubTrack`
+    if (!subscriptions || subscriptions.length === 0) {
+      return new Response(JSON.stringify({ message: 'No reminders to send' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
 
-    await supabase.functions.invoke('send-reminder-email', {
-      body: { to: pref.email, subject, content },
+    // Group subscriptions by user
+    const grouped: Record<string, Subscription[]> = {}
+    for (const sub of subscriptions) {
+      if (!grouped[sub.user_id]) {
+        grouped[sub.user_id] = []
+      }
+      grouped[sub.user_id].push(sub)
+    }
+
+    // Get user profiles and reminder preferences
+    const userIds = Object.keys(grouped)
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('user_id, full_name')
+      .in('user_id', userIds)
+
+    const { data: reminderPrefs, error: prefError } = await supabase
+      .from('reminder_prefs')
+      .select('user_id, days_before, channel')
+      .in('user_id', userIds)
+
+    if (profileError || prefError) {
+      console.error('Failed to fetch user data:', { profileError, prefError })
+      return new Response(JSON.stringify({ error: 'Failed to fetch user data' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Send reminders
+    let sentCount = 0
+    for (const [userId, userSubs] of Object.entries(grouped)) {
+      const profile = profiles?.find((p: UserProfile) => p.user_id === userId)
+      const prefs = reminderPrefs?.find((r: ReminderPref) => r.user_id === userId)
+
+      if (!profile || !prefs) continue
+
+      const totalAmount = userSubs.reduce((sum, sub) => sum + sub.price, 0)
+      const currency = userSubs[0]?.currency || 'USD'
+
+      // Send email reminder
+      if (prefs.channel === 'email') {
+        const { error: emailError } = await supabase.auth.admin.sendRawEmail({
+          to: profile.email || '',
+          subject: 'Payment Reminder - SubTrack',
+          html: `
+            <h2>Payment Reminder</h2>
+            <p>Hello ${profile.full_name || 'there'},</p>
+            <p>You have ${userSubs.length} subscription(s) due in the next ${prefs.days_before} days:</p>
+            <ul>
+              ${userSubs.map(sub => `<li>${sub.name}: ${sub.currency} ${sub.price}</li>`).join('')}
+            </ul>
+            <p><strong>Total: ${currency} ${totalAmount.toFixed(2)}</strong></p>
+            <p>Visit your dashboard to manage your subscriptions.</p>
+          `
+        })
+
+        if (!emailError) {
+          sentCount++
+        } else {
+          console.error('Failed to send email to', profile.email, emailError)
+        }
+      }
+    }
+
+    return new Response(JSON.stringify({ 
+      message: `Sent ${sentCount} reminders`,
+      total_subscriptions: subscriptions.length,
+      sent_count: sentCount
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    })
+
+  } catch (error) {
+    console.error('Reminder function error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
     })
   }
-
-  return new Response('ok', { status: 200 })
-}
-
-Deno.serve(handler) 
+} 

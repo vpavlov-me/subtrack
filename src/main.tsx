@@ -17,11 +17,22 @@ function AuthSync({ children }: { children: React.ReactNode }) {
 }
 
 function Providers({ children }: { children: React.ReactNode }) {
-  // Fallback clientId, чтобы можно было запускать без настроек WorkOS
-  const clientId = (import.meta.env.VITE_WORKOS_CLIENT_ID as string | undefined) ?? 'demo-client-id'
+  const clientId = import.meta.env.VITE_WORKOS_CLIENT_ID
+  
+  if (!clientId) {
+    console.error('VITE_WORKOS_CLIENT_ID is required')
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Configuration Error</h2>
+          <p className="text-gray-600">VITE_WORKOS_CLIENT_ID environment variable is required</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <AuthKitProvider clientId={clientId} devMode>
+    <AuthKitProvider clientId={clientId} devMode={import.meta.env.DEV}>
       <AuthSync>
         <ThemeProvider>
           <SubscriptionsProvider>
