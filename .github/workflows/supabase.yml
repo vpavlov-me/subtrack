@@ -1,0 +1,30 @@
+name: Supabase
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Supabase CLI
+        run: |
+          wget -q https://github.com/supabase/cli/releases/download/v1.142.0/supabase_1.142.0_linux_amd64.deb
+          sudo dpkg -i supabase_1.142.0_linux_amd64.deb
+
+      - name: Link to Supabase project
+        run: supabase link --project-ref ikhjhrogspcqgkejrczx
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Push database changes
+        run: supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }} 

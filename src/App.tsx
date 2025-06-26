@@ -1,44 +1,48 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Navigation } from './components/Navigation';
-import { Login } from './pages/Login';
-import { useAuth } from './store/auth';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import Layout from '@/components/Layout'
+import Dashboard from '@/pages/Dashboard'
+import Transactions from '@/pages/Transactions'
+import Settings from '@/pages/Settings'
+import Login from '@/pages/Login'
+import Register from '@/pages/Register'
+import Landing from '@/pages/Landing'
+import Pricing from '@/pages/Pricing'
+import TeamSettings from '@/pages/TeamSettings'
+import Billing from '@/pages/Billing'
+import OnboardingPage from '@/pages/Onboarding'
+import { useSubscriptions } from '@/features/subscriptions/SubscriptionsProvider'
+import { ReactElement } from 'react'
 
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div>Загрузка...</div>;
-  }
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  return <>{children}</>;
+function LayoutRoute() {
+  return <Layout><Outlet /></Layout>
 }
 
-function App() {
+function RequireOnboarding({ children }: { children: ReactElement }) {
+  const { subscriptions, loading } = useSubscriptions()
+  if (loading) return null
+  if (subscriptions.length===0 && localStorage.getItem('onboarding_done')!=='true') return <Navigate to="/onboarding" replace />
+  return children
+}
+
+export default function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <div>Dashboard (в разработке)</div>
-                </PrivateRoute>
-              }
-            />
-            <Route path="/" element={<Navigate to="/dashboard" />} />
-          </Routes>
-        </main>
-      </div>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route element={<LayoutRoute />}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<RequireOnboarding><Dashboard/></RequireOnboarding>} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings/team" element={<TeamSettings />} />
+          <Route path="/settings/billing" element={<Billing />} />
+          <Route path="/subscriptions" element={<Navigate to="/dashboard" replace />} />
+        </Route>
+        <Route path="/onboarding" element={<OnboardingPage />} />
+      </Routes>
     </Router>
-  );
+  )
 }
-
-export default App;

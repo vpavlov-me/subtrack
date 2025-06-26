@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, o3-update ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint --max-warnings 0
+      - name: Unit tests
+        run: pnpm test --run
+      - name: Build
+        run: pnpm build
+      - name: Build Storybook
+        run: pnpm storybook:build 

@@ -1,99 +1,55 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../store/auth';
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Link } from 'react-router-dom'
+import { useAuth } from '@workos-inc/authkit-react'
 
-export function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
-  const navigate = useNavigate();
-  const { signIn, signUp } = useAuth();
+const schema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+})
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+type LoginForm = z.infer<typeof schema>
 
-    try {
-      if (isSignUp) {
-        await signUp(email, password);
-      } else {
-        await signIn(email, password);
-      }
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка');
-    }
-  };
+export default function Login() {
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
+    resolver: zodResolver(schema),
+  })
+  const { signIn, isLoading } = useAuth()
+
+  function onSubmit(_data: LoginForm) {
+    void _data // avoid unused param error
+    signIn()
+  }
+
+  if (isLoading) return null
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isSignUp ? 'Создать аккаунт' : 'Войти в аккаунт'}
-          </h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Пароль
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Пароль"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
-          )}
-
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <Card className="w-full max-w-sm p-6 rounded-2xl border bg-white shadow-sm">
+        <h1 className="text-2xl font-bold mb-6 text-zinc-900">Вход в SubTrack</h1>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              {isSignUp ? 'Зарегистрироваться' : 'Войти'}
-            </button>
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" autoComplete="email" {...register('email')} />
+            {errors.email && <div className="text-sm text-red-500 mt-1">{errors.email.message}</div>}
           </div>
-
-          <div className="text-sm text-center">
-            <button
-              type="button"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-              onClick={() => setIsSignUp(!isSignUp)}
-            >
-              {isSignUp
-                ? 'Уже есть аккаунт? Войти'
-                : 'Нет аккаунта? Зарегистрироваться'}
-            </button>
+          <div>
+            <Label htmlFor="password">Пароль</Label>
+            <Input id="password" type="password" autoComplete="current-password" {...register('password')} />
+            {errors.password && <div className="text-sm text-red-500 mt-1">{errors.password.message}</div>}
           </div>
+          <Button type="submit" className="w-full mt-2">Войти</Button>
         </form>
-      </div>
+        <div className="mt-4 text-center text-sm text-zinc-500">
+          Нет аккаунта?{' '}
+          <Link to="/register" className="text-zinc-900 underline">Зарегистрироваться</Link>
+        </div>
+      </Card>
     </div>
-  );
+  )
 } 

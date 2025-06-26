@@ -1,0 +1,1 @@
+ALTER TABLE subscriptions ADD COLUMN tz text NOT NULL DEFAULT 'UTC'; 
