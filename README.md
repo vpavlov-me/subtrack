@@ -133,15 +133,65 @@ npm run storybook:build # Build for Chromatic
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
-1. Connect GitHub repository
-2. Set environment variables
-3. Deploy automatically on push to `main`
+### 🚀 Deploy on Vercel (Recommended)
 
-### Manual Deployment
+SubTrack is optimized for Vercel deployment with zero-downtime static hosting and edge functions.
+
+#### Quick Deploy
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to production
+pnpm deploy:vercel
+
+# Or use Git-based deployment
+git push origin main
+```
+
+#### Step-by-Step Guide
+For detailed deployment instructions, see [📖 Vercel Deployment Guide](docs/deploy-vercel.md).
+
+#### Key Features
+- **Zero-downtime**: Automatic blue-green deployments
+- **Security Headers**: HSTS, X-Frame-Options, CSP
+- **Edge Functions**: Serverless API routes
+- **CDN**: Global content delivery network
+- **Analytics**: Built-in performance monitoring
+
+#### Environment Setup
+```bash
+# Required variables (set in Vercel dashboard)
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+VITE_WORKOS_CLIENT_ID=your-workos-client-id
+VITE_STRIPE_PUBLISHABLE_KEY=your-stripe-key
+
+# Optional monitoring
+VITE_SENTRY_DSN=your-sentry-dsn
+VITE_POSTHOG_KEY=your-posthog-key
+```
+
+#### Free Plan Limits
+- **Bandwidth**: 100 GB/month
+- **Function Execution**: 100 GB-hours/month
+- **Build Minutes**: 6,000 minutes/month
+
+### Alternative Deployment Options
+
+#### Manual Deployment
 ```bash
 npm run build
 vercel --prod
+```
+
+#### Docker Deployment
+```bash
+# Build Docker image
+docker build -t subtrack .
+
+# Run container
+docker run -p 3000:3000 subtrack
 ```
 
 ## 📈 Monitoring & Analytics

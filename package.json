@@ -28,7 +28,9 @@
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",
     "supabase:deploy": "supabase functions deploy",
-    "mock:server": "node scripts/mock-server.cjs"
+    "mock:server": "node scripts/mock-server.cjs",
+    "deploy:vercel": "vercel --prod --confirm",
+    "vercel:dev": "vercel dev --listen 5173"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -48,6 +50,7 @@
     "@types/papaparse": "^5.3.16",
     "@types/recharts": "^1.8.29",
     "@types/uuid": "^10.0.0",
+    "@vercel/node": "^3.0.0",
     "@workos-inc/authkit-react": "^0.8.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -63,6 +66,7 @@
     "react-hook-form": "^7.56.3",
     "react-router-dom": "^6.30.0",
     "recharts": "^3.0.2",
+    "stripe": "^16.0.0",
     "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",

@@ -1,0 +1,66 @@
+# Development files
+supabase/
+tests/
+e2e/
+test-results/
+*.spec.*
+*.test.*
+*.stories.*
+.storybook/
+storybook-static/
+
+# Documentation
+*.md
+docs/
+CONTRIBUTING.md
+DEVELOPMENT.md
+GITHUB_SETUP.md
+MONITORING.md
+OBSERVABILITY_SETUP.md
+PRODUCTION_README.md
+SECURITY.md
+STRIPE_SETUP.md
+SUPABASE_SETUP.md
+VERCEL_SETUP.md
+RELEASE_SUMMARY.md
+CHANGELOG.md
+
+# Development configs
+.prettierrc
+.prettierignore
+.eslintrc*
+eslint.config.js
+.husky/
+.vscode/
+.cursor/
+.claude/
+
+# Build artifacts (will be regenerated)
+dist/
+coverage/
+*.tsbuildinfo
+
+# Environment files
+.env*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp 
