@@ -28,14 +28,18 @@ export function Navigation({
       case "ArrowRight":
       case "ArrowDown":
         event.preventDefault()
-        const nextIndex = (index + 1) % items.length
-        setActiveIndex(nextIndex)
+        {
+          const nextIndex = (index + 1) % items.length
+          setActiveIndex(nextIndex)
+        }
         break
       case "ArrowLeft":
       case "ArrowUp":
         event.preventDefault()
-        const prevIndex = index === 0 ? items.length - 1 : index - 1
-        setActiveIndex(prevIndex)
+        {
+          const prevIndex = index === 0 ? items.length - 1 : index - 1
+          setActiveIndex(prevIndex)
+        }
         break
       case "Home":
         event.preventDefault()
