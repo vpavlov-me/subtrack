@@ -1,113 +1,124 @@
-import { SubscriptionCreate } from '@/features/subscriptions/types'
+import { SubscriptionCreate } from '@/features/subscriptions/types';
 
 export interface CsvParseResult {
-  success: boolean
-  data?: SubscriptionCreate[]
-  errors?: string[]
-  warnings?: string[]
+  success: boolean;
+  data?: SubscriptionCreate[];
+  errors?: string[];
+  warnings?: string[];
 }
 
 export interface CsvRow {
-  name: string
-  price: string
-  billingCycle: string
-  nextBillingDate: string
-  category?: string
-  currency?: string
-  paymentMethod?: string
-  notes?: string
+  name: string;
+  price: string;
+  billingCycle: string;
+  nextBillingDate: string;
+  category?: string;
+  currency?: string;
+  paymentMethod?: string;
+  notes?: string;
 }
 
 export function parseCsvSubscriptions(csvContent: string): CsvParseResult {
   const result: CsvParseResult = {
     success: false,
     errors: [],
-    warnings: []
-  }
+    warnings: [],
+  };
 
   try {
     // Split CSV into lines and remove empty lines
-    const lines = csvContent.split('\n').filter(line => line.trim())
+    const lines = csvContent.split('\n').filter(line => line.trim());
     if (lines.length < 2) {
-      result.errors?.push('CSV must have at least a header row and one data row')
-      return result
+      result.errors?.push(
+        'CSV must have at least a header row and one data row'
+      );
+      return result;
     }
 
     // Parse header row
-    const headerRow = lines[0]
-    const headers = headerRow.split(',').map(h => h.trim().toLowerCase().replace(/\s+/g, ''))
-    
+    const headerRow = lines[0];
+    const headers = headerRow
+      .split(',')
+      .map(h => h.trim().toLowerCase().replace(/\s+/g, ''));
+
     // Validate headers
-    const requiredHeaders = ['name', 'price', 'billingcycle', 'nextbillingdate']
-    const missingHeaders = requiredHeaders.filter(h => !headers.includes(h))
+    const requiredHeaders = [
+      'name',
+      'price',
+      'billingcycle',
+      'nextbillingdate',
+    ];
+    const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
     if (missingHeaders.length > 0) {
-      result.errors?.push(`Missing required headers: ${missingHeaders.join(', ')}`)
-      return result
+      result.errors?.push(
+        `Missing required headers: ${missingHeaders.join(', ')}`
+      );
+      return result;
     }
 
-    const subscriptions: SubscriptionCreate[] = []
-    let hasErrors = false
+    const subscriptions: SubscriptionCreate[] = [];
+    let hasErrors = false;
 
     // Parse data rows
     for (let i = 1; i < lines.length; i++) {
-      const line = lines[i]
-      const values = line.split(',').map(v => v.trim())
-      const rowNumber = i // Changed from i + 1 to match test expectations
+      const line = lines[i];
+      const values = line.split(',').map(v => v.trim());
+      const rowNumber = i; // Changed from i + 1 to match test expectations
 
       // Create row object
-      const row: any = {}
+      const row: any = {};
       headers.forEach((header, index) => {
-        row[header] = values[index] || ''
-      })
+        row[header] = values[index] || '';
+      });
 
       // Check required fields
-      const missingFields = requiredHeaders.filter(field => !row[field])
+      const missingFields = requiredHeaders.filter(field => !row[field]);
       if (missingFields.length > 0) {
         result.errors?.push(
           `Row ${rowNumber}: Missing required fields: ${missingFields.join(', ')}`
-        )
-        hasErrors = true
-        continue
+        );
+        hasErrors = true;
+        continue;
       }
 
       // Validate and parse price
-      const price = parseFloat(row.price)
+      const price = parseFloat(row.price);
       if (isNaN(price) || price <= 0) {
         result.errors?.push(
           `Row ${rowNumber}: Invalid price "${row.price}". Must be a positive number.`
-        )
-        hasErrors = true
-        continue
+        );
+        hasErrors = true;
+        continue;
       }
 
       // Validate billing cycle
-      const billingCycle = row.billingcycle.toLowerCase()
+      const billingCycle = row.billingcycle.toLowerCase();
       if (!['monthly', 'yearly', 'custom'].includes(billingCycle)) {
         result.errors?.push(
           `Row ${rowNumber}: Invalid billing cycle "${row.billingcycle}". Must be monthly, yearly, or custom.`
-        )
-        hasErrors = true
-        continue
+        );
+        hasErrors = true;
+        continue;
       }
 
       // Validate and parse date
-      const nextBillingDate = new Date(row.nextbillingdate)
+      const nextBillingDate = new Date(row.nextbillingdate);
       if (isNaN(nextBillingDate.getTime())) {
         result.errors?.push(
           `Row ${rowNumber}: Invalid date "${row.nextbillingdate}". Use YYYY-MM-DD format.`
-        )
-        hasErrors = true
-        continue
+        );
+        hasErrors = true;
+        continue;
       }
 
       // Validate currency (optional)
-      let currency = row.currency?.toUpperCase() || 'USD'
-      const validCurrencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY']
+      let currency = row.currency?.toUpperCase() || 'USD';
+      const validCurrencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY'];
       if (!validCurrencies.includes(currency)) {
         result.warnings?.push(
           `Row ${rowNumber}: Unsupported currency "${currency}". Using USD instead.`
-        )
-        currency = 'USD'
+        );
+        currency = 'USD';
       }
 
       // Create subscription object
@@ -119,31 +130,34 @@ export function parseCsvSubscriptions(csvContent: string): CsvParseResult {
         nextBillingDate: nextBillingDate,
         category: row.category || 'General',
         paymentMethod: row.paymentmethod || undefined,
-        notes: row.notes || undefined
-      }
+        notes: row.notes || undefined,
+      };
 
-      subscriptions.push(subscription)
+      subscriptions.push(subscription);
     }
 
     if (subscriptions.length === 0) {
-      result.errors?.push('No valid subscriptions found in CSV')
-      return result
+      result.errors?.push('No valid subscriptions found in CSV');
+      return result;
     }
 
     // Only set success to true if there are no errors
-    result.success = !hasErrors
-    result.data = subscriptions
+    result.success = !hasErrors;
+    result.data = subscriptions;
 
     // Add summary warning if there were parsing issues
     if (result.warnings && result.warnings.length > 0) {
-      result.warnings.unshift(`${result.warnings.length} warnings found during parsing`)
+      result.warnings.unshift(
+        `${result.warnings.length} warnings found during parsing`
+      );
     }
-
   } catch (error) {
-    result.errors?.push(`Failed to parse CSV: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    result.errors?.push(
+      `Failed to parse CSV: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 
-  return result
+  return result;
 }
 
 export function generateCsvTemplate(): string {
@@ -155,8 +169,8 @@ export function generateCsvTemplate(): string {
     'Category',
     'Currency',
     'Payment Method',
-    'Notes'
-  ]
+    'Notes',
+  ];
 
   const example = [
     'Netflix',
@@ -166,48 +180,56 @@ export function generateCsvTemplate(): string {
     'Entertainment',
     'USD',
     'Credit Card',
-    'Personal account'
-  ]
+    'Personal account',
+  ];
 
-  return [headers.join(','), example.join(',')].join('\n')
+  return [headers.join(','), example.join(',')].join('\n');
 }
 
-export function validateCsvHeaders(headers: string[]): { valid: boolean; errors: string[] } {
-  const requiredHeaders = ['name', 'price', 'billingcycle', 'nextbillingdate']
-  const errors: string[] = []
+export function validateCsvHeaders(headers: string[]): {
+  valid: boolean;
+  errors: string[];
+} {
+  const requiredHeaders = ['name', 'price', 'billingcycle', 'nextbillingdate'];
+  const errors: string[] = [];
 
   for (const required of requiredHeaders) {
-    if (!headers.some(header => 
-      header.toLowerCase().replace(/\s+/g, '') === required
-    )) {
-      errors.push(`Missing required header: ${required}`)
+    if (
+      !headers.some(
+        header => header.toLowerCase().replace(/\s+/g, '') === required
+      )
+    ) {
+      errors.push(`Missing required header: ${required}`);
     }
   }
 
   return {
     valid: errors.length === 0,
-    errors
-  }
+    errors,
+  };
 }
 
-export function parseCSV(csvContent: string): { data: any[], headers: string[] } {
-  const lines = csvContent.split('\n').filter(line => line.trim())
+export function parseCSV(csvContent: string): {
+  data: any[];
+  headers: string[];
+} {
+  const lines = csvContent.split('\n').filter(line => line.trim());
   if (lines.length < 1) {
-    return { data: [], headers: [] }
+    return { data: [], headers: [] };
   }
 
   // Parse headers
-  const headers = lines[0].split(',').map(h => h.trim())
-  
+  const headers = lines[0].split(',').map(h => h.trim());
+
   // Parse data rows
   const data = lines.slice(1).map(line => {
-    const values = line.split(',').map(v => v.trim())
-    const row: any = {}
+    const values = line.split(',').map(v => v.trim());
+    const row: any = {};
     headers.forEach((header, index) => {
-      row[header] = values[index] || ''
-    })
-    return row
-  })
+      row[header] = values[index] || '';
+    });
+    return row;
+  });
 
-  return { data, headers }
-} 
+  return { data, headers };
+}

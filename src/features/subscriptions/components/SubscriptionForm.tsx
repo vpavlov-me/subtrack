@@ -4,7 +4,13 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { SubscriptionCreate } from '../types';
 
 const formSchema = z.object({
@@ -88,7 +94,9 @@ export function SubscriptionForm({ onSubmit }: Props) {
       <div className="space-y-2">
         <Label htmlFor="billingCycle">Billing Cycle</Label>
         <Select
-          onValueChange={(value) => setValue('billingCycle', value as 'monthly' | 'yearly' | 'custom')}
+          onValueChange={value =>
+            setValue('billingCycle', value as 'monthly' | 'yearly' | 'custom')
+          }
           defaultValue="monthly"
         >
           <SelectTrigger>
@@ -113,23 +121,38 @@ export function SubscriptionForm({ onSubmit }: Props) {
           {...register('nextBillingDate', { valueAsDate: true })}
         />
         {errors.nextBillingDate && (
-          <p className="text-sm text-red-500">{errors.nextBillingDate.message}</p>
+          <p className="text-sm text-red-500">
+            {errors.nextBillingDate.message}
+          </p>
         )}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="category">Category</Label>
-        <Input id="category" {...register('category')} placeholder="e.g. SaaS, Hosting" />
+        <Input
+          id="category"
+          {...register('category')}
+          placeholder="e.g. SaaS, Hosting"
+        />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="paymentMethod">Payment Method</Label>
-        <Input id="paymentMethod" {...register('paymentMethod')} placeholder="Visa **** 4242" />
+        <Input
+          id="paymentMethod"
+          {...register('paymentMethod')}
+          placeholder="Visa **** 4242"
+        />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="notes">Notes</Label>
-        <textarea id="notes" className="w-full border rounded p-2" rows={3} {...register('notes')} />
+        <textarea
+          id="notes"
+          className="w-full border rounded p-2"
+          rows={3}
+          {...register('notes')}
+        />
       </div>
 
       <Button type="submit" className="w-full">
@@ -137,4 +160,4 @@ export function SubscriptionForm({ onSubmit }: Props) {
       </Button>
     </form>
   );
-} 
+}

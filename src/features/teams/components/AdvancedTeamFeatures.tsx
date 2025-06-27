@@ -1,32 +1,60 @@
-import { useState } from 'react'
-import { Users, Shield, BarChart3, UserPlus, Settings, Crown, User, UserCheck } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { toast } from 'sonner'
+import { useState } from 'react';
+import {
+  Users,
+  Shield,
+  BarChart3,
+  UserPlus,
+  Settings,
+  Crown,
+  User,
+  UserCheck,
+} from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from 'sonner';
 
 interface TeamMember {
-  id: string
-  name: string
-  email: string
-  role: 'owner' | 'admin' | 'member' | 'viewer'
-  status: 'active' | 'pending' | 'inactive'
-  joinedAt: string
-  lastActive: string
-  permissions: string[]
+  id: string;
+  name: string;
+  email: string;
+  role: 'owner' | 'admin' | 'member' | 'viewer';
+  status: 'active' | 'pending' | 'inactive';
+  joinedAt: string;
+  lastActive: string;
+  permissions: string[];
 }
 
 interface TeamRole {
-  name: string
-  permissions: string[]
-  memberCount: number
-  description: string
+  name: string;
+  permissions: string[];
+  memberCount: number;
+  description: string;
 }
 
 const ROLES: TeamRole[] = [
@@ -34,27 +62,32 @@ const ROLES: TeamRole[] = [
     name: 'Owner',
     permissions: ['all'],
     memberCount: 1,
-    description: 'Full access to all team features and settings'
+    description: 'Full access to all team features and settings',
   },
   {
     name: 'Admin',
-    permissions: ['manage_subscriptions', 'manage_members', 'view_analytics', 'export_data'],
+    permissions: [
+      'manage_subscriptions',
+      'manage_members',
+      'view_analytics',
+      'export_data',
+    ],
     memberCount: 2,
-    description: 'Can manage subscriptions, members, and view analytics'
+    description: 'Can manage subscriptions, members, and view analytics',
   },
   {
     name: 'Member',
     permissions: ['view_subscriptions', 'edit_subscriptions', 'view_analytics'],
     memberCount: 5,
-    description: 'Can view and edit subscriptions, view analytics'
+    description: 'Can view and edit subscriptions, view analytics',
   },
   {
     name: 'Viewer',
     permissions: ['view_subscriptions', 'view_analytics'],
     memberCount: 3,
-    description: 'Read-only access to subscriptions and analytics'
-  }
-]
+    description: 'Read-only access to subscriptions and analytics',
+  },
+];
 
 const PERMISSIONS = [
   { id: 'view_subscriptions', label: 'View Subscriptions' },
@@ -64,8 +97,8 @@ const PERMISSIONS = [
   { id: 'export_data', label: 'Export Data' },
   { id: 'manage_members', label: 'Manage Team Members' },
   { id: 'billing_access', label: 'Billing Access' },
-  { id: 'settings_access', label: 'Settings Access' }
-]
+  { id: 'settings_access', label: 'Settings Access' },
+];
 
 export function AdvancedTeamFeatures() {
   const [members, setMembers] = useState<TeamMember[]>([
@@ -77,7 +110,7 @@ export function AdvancedTeamFeatures() {
       status: 'active',
       joinedAt: '2024-01-15',
       lastActive: '2024-01-27',
-      permissions: ['all']
+      permissions: ['all'],
     },
     {
       id: '2',
@@ -87,7 +120,12 @@ export function AdvancedTeamFeatures() {
       status: 'active',
       joinedAt: '2024-01-20',
       lastActive: '2024-01-26',
-      permissions: ['manage_subscriptions', 'manage_members', 'view_analytics', 'export_data']
+      permissions: [
+        'manage_subscriptions',
+        'manage_members',
+        'view_analytics',
+        'export_data',
+      ],
     },
     {
       id: '3',
@@ -97,49 +135,55 @@ export function AdvancedTeamFeatures() {
       status: 'active',
       joinedAt: '2024-01-22',
       lastActive: '2024-01-25',
-      permissions: ['view_subscriptions', 'edit_subscriptions', 'view_analytics']
-    }
-  ])
+      permissions: [
+        'view_subscriptions',
+        'edit_subscriptions',
+        'view_analytics',
+      ],
+    },
+  ]);
 
-  const [inviteEmail, setInviteEmail] = useState('')
-  const [inviteRole, setInviteRole] = useState('member')
-  const [saving, setSaving] = useState(false)
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState('member');
+  const [saving, setSaving] = useState(false);
 
   const getRoleIcon = (role: string) => {
     switch (role) {
       case 'owner':
-        return <Crown className="h-4 w-4 text-yellow-500" />
+        return <Crown className="h-4 w-4 text-yellow-500" />;
       case 'admin':
-        return <Shield className="h-4 w-4 text-blue-500" />
+        return <Shield className="h-4 w-4 text-blue-500" />;
       case 'member':
-        return <User className="h-4 w-4 text-green-500" />
+        return <User className="h-4 w-4 text-green-500" />;
       case 'viewer':
-        return <UserCheck className="h-4 w-4 text-gray-500" />
+        return <UserCheck className="h-4 w-4 text-gray-500" />;
       default:
-        return <User className="h-4 w-4" />
+        return <User className="h-4 w-4" />;
     }
-  }
+  };
 
   const getStatusBadge = (status: string) => {
     const colors = {
       active: 'bg-green-100 text-green-800',
       pending: 'bg-yellow-100 text-yellow-800',
-      inactive: 'bg-red-100 text-red-800'
-    }
-    return <Badge className={colors[status as keyof typeof colors]}>{status}</Badge>
-  }
+      inactive: 'bg-red-100 text-red-800',
+    };
+    return (
+      <Badge className={colors[status as keyof typeof colors]}>{status}</Badge>
+    );
+  };
 
   const handleInvite = async () => {
     if (!inviteEmail) {
-      toast.error('Please enter an email address')
-      return
+      toast.error('Please enter an email address');
+      return;
     }
 
-    setSaving(true)
+    setSaving(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       const newMember: TeamMember = {
         id: Date.now().toString(),
         name: inviteEmail.split('@')[0],
@@ -148,36 +192,42 @@ export function AdvancedTeamFeatures() {
         status: 'pending',
         joinedAt: new Date().toISOString().split('T')[0],
         lastActive: '-',
-        permissions: ROLES.find(r => r.name.toLowerCase() === inviteRole)?.permissions || []
-      }
-      
-      setMembers(prev => [...prev, newMember])
-      setInviteEmail('')
-      toast.success(`Invitation sent to ${inviteEmail}`)
+        permissions:
+          ROLES.find(r => r.name.toLowerCase() === inviteRole)?.permissions ||
+          [],
+      };
+
+      setMembers(prev => [...prev, newMember]);
+      setInviteEmail('');
+      toast.success(`Invitation sent to ${inviteEmail}`);
     } catch (error) {
-      toast.error('Failed to send invitation')
+      toast.error('Failed to send invitation');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const updateMemberRole = (memberId: string, newRole: string) => {
-    setMembers(prev => prev.map(member => 
-      member.id === memberId 
-        ? { 
-            ...member, 
-            role: newRole as any,
-            permissions: ROLES.find(r => r.name.toLowerCase() === newRole)?.permissions || []
-          }
-        : member
-    ))
-    toast.success('Member role updated')
-  }
+    setMembers(prev =>
+      prev.map(member =>
+        member.id === memberId
+          ? {
+              ...member,
+              role: newRole as any,
+              permissions:
+                ROLES.find(r => r.name.toLowerCase() === newRole)
+                  ?.permissions || [],
+            }
+          : member
+      )
+    );
+    toast.success('Member role updated');
+  };
 
   const removeMember = (memberId: string) => {
-    setMembers(prev => prev.filter(member => member.id !== memberId))
-    toast.success('Member removed from team')
-  }
+    setMembers(prev => prev.filter(member => member.id !== memberId));
+    toast.success('Member removed from team');
+  };
 
   return (
     <div className="space-y-6">
@@ -220,7 +270,7 @@ export function AdvancedTeamFeatures() {
                     type="email"
                     placeholder="colleague@company.com"
                     value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
+                    onChange={e => setInviteEmail(e.target.value)}
                   />
                 </div>
                 <div className="w-48">
@@ -263,12 +313,14 @@ export function AdvancedTeamFeatures() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {members.map((member) => (
+                  {members.map(member => (
                     <TableRow key={member.id}>
                       <TableCell>
                         <div>
                           <div className="font-medium">{member.name}</div>
-                          <div className="text-sm text-muted-foreground">{member.email}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {member.email}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -284,7 +336,9 @@ export function AdvancedTeamFeatures() {
                         <div className="flex gap-2">
                           <Select
                             value={member.role}
-                            onValueChange={(value) => updateMemberRole(member.id, value)}
+                            onValueChange={value =>
+                              updateMemberRole(member.id, value)
+                            }
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />
@@ -317,7 +371,7 @@ export function AdvancedTeamFeatures() {
         <TabsContent value="roles" className="space-y-4">
           {/* Roles Overview */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {ROLES.map((role) => (
+            {ROLES.map(role => (
               <Card key={role.name}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -354,18 +408,21 @@ export function AdvancedTeamFeatures() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Permission</TableHead>
-                    {ROLES.map((role) => (
-                      <TableHead key={role.name} className="text-center">{role.name}</TableHead>
+                    {ROLES.map(role => (
+                      <TableHead key={role.name} className="text-center">
+                        {role.name}
+                      </TableHead>
                     ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {PERMISSIONS.map((permission) => (
+                  {PERMISSIONS.map(permission => (
                     <TableRow key={permission.id}>
                       <TableCell>{permission.label}</TableCell>
-                      {ROLES.map((role) => (
+                      {ROLES.map(role => (
                         <TableCell key={role.name} className="text-center">
-                          {role.permissions.includes('all') || role.permissions.includes(permission.id) ? (
+                          {role.permissions.includes('all') ||
+                          role.permissions.includes(permission.id) ? (
                             <div className="w-4 h-4 bg-green-500 rounded-full mx-auto" />
                           ) : (
                             <div className="w-4 h-4 bg-gray-200 rounded-full mx-auto" />
@@ -394,11 +451,15 @@ export function AdvancedTeamFeatures() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span>Active Members</span>
-                    <span className="font-medium">{members.filter(m => m.status === 'active').length}</span>
+                    <span className="font-medium">
+                      {members.filter(m => m.status === 'active').length}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Pending Invites</span>
-                    <span className="font-medium">{members.filter(m => m.status === 'pending').length}</span>
+                    <span className="font-medium">
+                      {members.filter(m => m.status === 'pending').length}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Total Subscriptions</span>
@@ -447,7 +508,9 @@ export function AdvancedTeamFeatures() {
                     <Switch />
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Require approval for changes</span>
+                    <span className="text-sm">
+                      Require approval for changes
+                    </span>
                     <Switch defaultChecked />
                   </div>
                   <div className="flex items-center justify-between">
@@ -461,5 +524,5 @@ export function AdvancedTeamFeatures() {
         </TabsContent>
       </Tabs>
     </div>
-  )
-} 
+  );
+}

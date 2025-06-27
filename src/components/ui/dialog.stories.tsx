@@ -1,14 +1,21 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './dialog'
-import { Button } from './button'
+import type { Meta, StoryObj } from '@storybook/react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './dialog';
+import { Button } from './button';
 
 const meta: Meta<typeof Dialog> = {
   title: 'UI/Dialog',
   component: Dialog,
   tags: ['autodocs'],
-}
+};
 
-export default meta
+export default meta;
 
 export const Default: StoryObj<typeof Dialog> = {
   render: () => (
@@ -20,7 +27,8 @@ export const Default: StoryObj<typeof Dialog> = {
         <DialogHeader>
           <DialogTitle>Are you sure?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your subscription.
+            This action cannot be undone. This will permanently delete your
+            subscription.
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end space-x-2">
@@ -30,7 +38,7 @@ export const Default: StoryObj<typeof Dialog> = {
       </DialogContent>
     </Dialog>
   ),
-}
+};
 
 export const FormDialog: StoryObj<typeof Dialog> = {
   render: () => (
@@ -74,4 +82,4 @@ export const FormDialog: StoryObj<typeof Dialog> = {
       </DialogContent>
     </Dialog>
   ),
-} 
+};

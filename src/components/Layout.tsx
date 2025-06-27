@@ -1,14 +1,19 @@
-import { ReactNode } from 'react'
-import { useTheme } from '@/lib/theme'
-import { Sun, Moon, ChevronDown } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { useAuth } from '@workos-inc/authkit-react'
-import { supabase } from '@/lib/supabase'
-import { useCurrency } from '@/features/currency/CurrencyProvider'
-import { FeedbackWidget } from '@/components/FeedbackWidget'
-import { Navigation, SkipLink } from '@/components/ui/navigation'
-import { MobileNav, BottomNav } from '@/components/ui/mobile-nav'
+import { ReactNode } from 'react';
+import { useTheme } from '@/lib/theme';
+import { Sun, Moon, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useAuth } from '@workos-inc/authkit-react';
+import { supabase } from '@/lib/supabase';
+import { useCurrency } from '@/features/currency/CurrencyProvider';
+import { FeedbackWidget } from '@/components/FeedbackWidget';
+import { Navigation, SkipLink } from '@/components/ui/navigation';
+import { MobileNav, BottomNav } from '@/components/ui/mobile-nav';
 
 const navigationItems = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -17,8 +22,8 @@ const navigationItems = [
   { to: '/notifications', label: 'Notifications' },
   { to: '/team/advanced', label: 'Team' },
   { to: '/transactions', label: 'Transactions' },
-  { to: '/settings', label: 'Settings' }
-]
+  { to: '/settings', label: 'Settings' },
+];
 
 const mobileNavItems = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -27,18 +32,18 @@ const mobileNavItems = [
   { to: '/notifications', label: 'Notifications' },
   { to: '/team/advanced', label: 'Team' },
   { to: '/transactions', label: 'Transactions' },
-  { to: '/settings', label: 'Settings' }
-]
+  { to: '/settings', label: 'Settings' },
+];
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const { dark, toggle } = useTheme()
-  const { signOut } = useAuth()
-  const { userCurrency, setUserCurrency, availableCurrencies } = useCurrency()
+  const { dark, toggle } = useTheme();
+  const { signOut } = useAuth();
+  const { userCurrency, setUserCurrency, availableCurrencies } = useCurrency();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    signOut()
-  }
+    await supabase.auth.signOut();
+    signOut();
+  };
 
   return (
     <div className={`min-h-screen ${dark ? 'dark' : ''}`}>
@@ -46,23 +51,31 @@ export default function Layout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-950/70 backdrop-blur">
         <div className="max-w-4xl mx-auto flex items-center justify-between px-4 h-16">
           <div className="flex items-center gap-8">
-            <span className={`font-extrabold text-2xl tracking-tight select-none ${dark ? 'text-zinc-100' : 'text-zinc-900'}`}>SubTrack</span>
+            <span
+              className={`font-extrabold text-2xl tracking-tight select-none ${dark ? 'text-zinc-100' : 'text-zinc-900'}`}
+            >
+              SubTrack
+            </span>
             <Navigation items={navigationItems} className="hidden md:flex" />
           </div>
           <div className="flex items-center gap-4">
             {/* Mobile Navigation */}
             <MobileNav items={mobileNavItems} />
-            
+
             {/* Currency Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1 focus-visible-ring hidden sm:flex">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1 focus-visible-ring hidden sm:flex"
+                >
                   {userCurrency}
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {availableCurrencies.map((currency) => (
+                {availableCurrencies.map(currency => (
                   <DropdownMenuItem
                     key={currency}
                     onClick={() => setUserCurrency(currency)}
@@ -73,43 +86,54 @@ export default function Layout({ children }: { children: ReactNode }) {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            
+
             {/* Theme Toggle */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={toggle} 
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggle}
               aria-label="Toggle theme"
               className="focus-visible-ring"
             >
-              {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {dark ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
             </Button>
-            
+
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="rounded-full w-10 h-10 p-0 focus-visible-ring">
-                  <span className={`inline-block w-8 h-8 rounded-full ${dark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
+                <Button
+                  variant="ghost"
+                  className="rounded-full w-10 h-10 p-0 focus-visible-ring"
+                >
+                  <span
+                    className={`inline-block w-8 h-8 rounded-full ${dark ? 'bg-zinc-700' : 'bg-zinc-200'}`}
+                  />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={handleSignOut}>Logout</DropdownMenuItem>
+                <DropdownMenuItem onSelect={handleSignOut}>
+                  Logout
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
       </header>
-      
+
       {/* Main content */}
       <main id="main-content" className="flex-1 pb-20 md:pb-0">
         {children}
       </main>
-      
+
       {/* Bottom Navigation for Mobile */}
       <BottomNav items={mobileNavItems.slice(0, 4)} />
-      
+
       {/* Feedback Widget */}
       <FeedbackWidget />
     </div>
-  )
-} 
+  );
+}

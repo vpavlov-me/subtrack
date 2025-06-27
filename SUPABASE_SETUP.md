@@ -55,6 +55,7 @@ supabase functions list
 В Supabase Dashboard > Database > Cron:
 
 1. **reminder** - ежедневно в 9:00 UTC
+
    ```sql
    0 9 * * * select reminder()
    ```
@@ -70,11 +71,12 @@ supabase functions list
 
 1. Создайте bucket `avatars` для аватаров пользователей
 2. Настройте RLS политики:
+
    ```sql
    -- Пользователи могут загружать свои аватары
    CREATE POLICY "Users can upload own avatar" ON storage.objects
    FOR INSERT WITH CHECK (auth.uid()::text = (storage.foldername(name))[1]);
-   
+
    -- Пользователи могут просматривать аватары
    CREATE POLICY "Users can view avatars" ON storage.objects
    FOR SELECT USING (true);
@@ -85,7 +87,7 @@ supabase functions list
 В Supabase Dashboard > Authentication > Settings:
 
 1. **Site URL**: `https://your-domain.vercel.app`
-2. **Redirect URLs**: 
+2. **Redirect URLs**:
    - `https://your-domain.vercel.app/auth/callback`
    - `http://localhost:5173/auth/callback` (для разработки)
 
@@ -122,7 +124,8 @@ supabase db reset
 ## 12. Мониторинг
 
 В Supabase Dashboard > Logs:
+
 - Database logs
-- Auth logs  
+- Auth logs
 - Edge function logs
-- API logs 
+- API logs

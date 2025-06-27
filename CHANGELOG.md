@@ -14,6 +14,7 @@ This is the first production-ready release of SubTrack, a modern subscription ma
 ### ✨ Added
 
 #### Core Features
+
 - **Dashboard Analytics**: KPI cards, spending charts, and category breakdowns
 - **Subscription Management**: Full CRUD operations with bulk CSV import/export
 - **Smart Onboarding**: Guided setup wizard with CSV import integration
@@ -23,6 +24,7 @@ This is the first production-ready release of SubTrack, a modern subscription ma
 - **Responsive Design**: Mobile-first approach with PWA support
 
 #### Advanced Features
+
 - **Category Analytics**: Materialized views with Recharts visualizations
 - **Seat Management**: RLS-enforced team limits with upgrade prompts
 - **CSV Import/Export**: Robust parsing with validation and error handling
@@ -31,6 +33,7 @@ This is the first production-ready release of SubTrack, a modern subscription ma
 - **Accessibility**: WCAG compliant with keyboard navigation
 
 #### Technical Infrastructure
+
 - **Monitoring & Analytics**: Sentry error tracking, PostHog user analytics
 - **CI/CD Pipeline**: GitHub Actions with automated testing and deployment
 - **Testing Suite**: Unit tests (Vitest) and E2E tests (Playwright)
@@ -124,12 +127,14 @@ This is the initial release, so no migration is required. For future updates, mi
 ### 🎯 Roadmap
 
 #### v1.1 (Next Release)
+
 - Advanced reporting and exports
 - Integration with bank APIs
 - Mobile app (React Native)
 - Advanced team permissions
 
 #### v1.2 (Future)
+
 - AI-powered spending insights
 - Subscription optimization recommendations
 - Multi-language support
@@ -140,12 +145,14 @@ This is the initial release, so no migration is required. For future updates, mi
 ## [0.9.0] - 2024-06-20
 
 ### Added
+
 - Initial beta release
 - Basic subscription management
 - User authentication
 - Simple dashboard
 
 ### Changed
+
 - Core architecture established
 - Database schema finalized
 - UI framework selected
@@ -157,6 +164,7 @@ For detailed information about each release, see the [GitHub releases page](http
 ## [Unreleased]
 
 ### Added
+
 - Comprehensive CI/CD pipeline with quality checks, testing, and deployment
 - Automated release workflow with version bumping and changelog generation
 - GitHub issue templates for bugs, features, and security vulnerabilities
@@ -166,17 +174,20 @@ For detailed information about each release, see the [GitHub releases page](http
 - Branch protection rules and pull request workflow
 
 ### Changed
+
 - Updated CI workflow to use npm instead of pnpm
 - Enhanced E2E tests with better error handling and reporting
 - Improved security scanning with Snyk integration
 
 ### Fixed
+
 - Resolved linter errors in CI workflow configuration
 - Fixed conditional syntax in release workflow
 
 ## [0.8.0] - 2024-12-18
 
 ### Added
+
 - Team collaboration features
 - Role-based access control
 - Invite system for team members
@@ -186,12 +197,14 @@ For detailed information about each release, see the [GitHub releases page](http
 - Timezone support for global users
 
 ### Changed
+
 - Enhanced subscription management interface
 - Improved billing integration
 - Updated authentication flow with WorkOS SSO
 - Better mobile responsiveness
 
 ### Fixed
+
 - Authentication edge cases
 - Data synchronization issues
 - Performance optimizations
@@ -199,6 +212,7 @@ For detailed information about each release, see the [GitHub releases page](http
 ## [0.7.0] - 2024-12-17
 
 ### Added
+
 - Stripe billing integration
 - Subscription management dashboard
 - User authentication with Supabase
@@ -207,11 +221,13 @@ For detailed information about each release, see the [GitHub releases page](http
 - Dark mode support
 
 ### Changed
+
 - Initial project setup
 - Core architecture implementation
 - Database schema design
 
 ### Fixed
+
 - Initial bugs and issues
 
 ---
@@ -221,11 +237,13 @@ For detailed information about each release, see the [GitHub releases page](http
 ### Upgrading to 0.9.0
 
 1. **Database Migrations**: Run the latest migrations to add new fields:
+
    ```bash
    supabase db reset
    ```
 
 2. **Environment Variables**: Add new required environment variables:
+
    ```bash
    VITE_POSTHOG_KEY=your_posthog_key
    VITE_POSTHOG_HOST=https://app.posthog.com
@@ -255,6 +273,7 @@ For detailed information about each release, see the [GitHub releases page](http
 ## Support
 
 For support and questions:
+
 - Create an issue on GitHub
 - Check the documentation
 - Review the contributing guidelines
@@ -287,4 +306,4 @@ Thank you to all contributors who have helped make SubTrack better!
 
 ### Security
 - Security fixes
---> 
+-->

@@ -21,8 +21,8 @@ pnpm add @sentry/react @sentry/tracing
 Создайте файл `src/lib/sentry.ts`:
 
 ```typescript
-import * as Sentry from '@sentry/react'
-import { BrowserTracing } from '@sentry/tracing'
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
 
 export function initSentry() {
   if (import.meta.env.VITE_SENTRY_DSN) {
@@ -32,7 +32,7 @@ export function initSentry() {
       tracesSampleRate: 1.0,
       environment: import.meta.env.MODE,
       release: import.meta.env.VITE_APP_VERSION || '1.0.0',
-    })
+    });
   }
 }
 ```
@@ -67,7 +67,7 @@ function ErrorFallback({ error }: { error: Error }) {
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
         <p className="text-gray-600 mb-4">{error.message}</p>
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-blue-500 text-white rounded"
         >
@@ -109,22 +109,22 @@ pnpm add posthog-js
 Создайте файл `src/lib/posthog.ts`:
 
 ```typescript
-import posthog from 'posthog-js'
+import posthog from 'posthog-js';
 
 export function initPostHog() {
   if (import.meta.env.VITE_POSTHOG_KEY) {
     posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
       api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://app.posthog.com',
-      loaded: (posthog) => {
-        if (import.meta.env.DEV) posthog.debug()
+      loaded: posthog => {
+        if (import.meta.env.DEV) posthog.debug();
       },
       capture_pageview: false,
       capture_pageleave: true,
-    })
+    });
   }
 }
 
-export { posthog }
+export { posthog };
 ```
 
 ### Интеграция в приложение
@@ -132,16 +132,16 @@ export { posthog }
 В `src/main.tsx`:
 
 ```typescript
-import { initPostHog } from '@/lib/posthog'
+import { initPostHog } from '@/lib/posthog';
 
 // Инициализация PostHog
-initPostHog()
+initPostHog();
 ```
 
 ### Event Tracking
 
 ```typescript
-import { posthog } from '@/lib/posthog'
+import { posthog } from '@/lib/posthog';
 
 // Track user actions
 export function trackSubscriptionCreated(subscription: Subscription) {
@@ -151,38 +151,38 @@ export function trackSubscriptionCreated(subscription: Subscription) {
     currency: subscription.currency,
     billing_cycle: subscription.billingCycle,
     category: subscription.category,
-  })
+  });
 }
 
 export function trackTeamInviteSent(email: string) {
   posthog.capture('team_invite_sent', {
     email: email,
-  })
+  });
 }
 
 export function trackOnboardingCompleted(step: number) {
   posthog.capture('onboarding_completed', {
     step: step,
-  })
+  });
 }
 ```
 
 ### User Identification
 
 ```typescript
-import { posthog } from '@/lib/posthog'
+import { posthog } from '@/lib/posthog';
 
 // Identify user after login
 export function identifyUser(user: User) {
   posthog.identify(user.id, {
     email: user.email,
     name: user.user_metadata?.full_name,
-  })
+  });
 }
 
 // Reset on logout
 export function resetUser() {
-  posthog.reset()
+  posthog.reset();
 }
 ```
 
@@ -223,7 +223,7 @@ createRoot(document.getElementById('root')!).render(
 ### Web Vitals
 
 ```typescript
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals'
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
 
 function sendToAnalytics(metric: any) {
   // Send to PostHog
@@ -231,20 +231,20 @@ function sendToAnalytics(metric: any) {
     name: metric.name,
     value: metric.value,
     id: metric.id,
-  })
-  
+  });
+
   // Send to Sentry
   Sentry.metrics.increment('web_vital', {
     tags: { name: metric.name },
     value: metric.value,
-  })
+  });
 }
 
-getCLS(sendToAnalytics)
-getFID(sendToAnalytics)
-getFCP(sendToAnalytics)
-getLCP(sendToAnalytics)
-getTTFB(sendToAnalytics)
+getCLS(sendToAnalytics);
+getFID(sendToAnalytics);
+getFCP(sendToAnalytics);
+getLCP(sendToAnalytics);
+getTTFB(sendToAnalytics);
 ```
 
 ### Custom Metrics
@@ -252,16 +252,16 @@ getTTFB(sendToAnalytics)
 ```typescript
 // Track page load time
 export function trackPageLoad(page: string) {
-  const loadTime = performance.now()
-  
+  const loadTime = performance.now();
+
   posthog.capture('page_load', {
     page: page,
     load_time: loadTime,
-  })
-  
+  });
+
   Sentry.metrics.timing('page_load', loadTime, {
     tags: { page: page },
-  })
+  });
 }
 
 // Track API response time
@@ -269,11 +269,11 @@ export function trackApiCall(endpoint: string, duration: number) {
   posthog.capture('api_call', {
     endpoint: endpoint,
     duration: duration,
-  })
-  
+  });
+
   Sentry.metrics.timing('api_call', duration, {
     tags: { endpoint: endpoint },
-  })
+  });
 }
 ```
 
@@ -282,41 +282,41 @@ export function trackApiCall(endpoint: string, duration: number) {
 ### Global Error Handler
 
 ```typescript
-import { posthog } from '@/lib/posthog'
+import { posthog } from '@/lib/posthog';
 
-window.addEventListener('error', (event) => {
+window.addEventListener('error', event => {
   posthog.capture('javascript_error', {
     message: event.message,
     filename: event.filename,
     lineno: event.lineno,
     colno: event.colno,
     error: event.error?.stack,
-  })
-})
+  });
+});
 
-window.addEventListener('unhandledrejection', (event) => {
+window.addEventListener('unhandledrejection', event => {
   posthog.capture('unhandled_promise_rejection', {
     reason: event.reason,
-  })
-})
+  });
+});
 ```
 
 ### API Error Tracking
 
 ```typescript
-import { posthog } from '@/lib/posthog'
+import { posthog } from '@/lib/posthog';
 
 export function trackApiError(endpoint: string, error: any) {
   posthog.capture('api_error', {
     endpoint: endpoint,
     error: error.message,
     status: error.status,
-  })
-  
+  });
+
   Sentry.captureException(error, {
     tags: { endpoint: endpoint },
     extra: { status: error.status },
-  })
+  });
 }
 ```
 
@@ -360,16 +360,19 @@ export function trackApiError(endpoint: string, error: any) {
 ## 8. Best Practices
 
 ### Error Tracking
+
 - Не логируйте чувствительные данные
 - Группируйте похожие ошибки
 - Настройте правильные уровни логирования
 
 ### Performance Monitoring
+
 - Отслеживайте ключевые метрики
 - Настройте базовые линии
 - Мониторьте тренды
 
 ### User Analytics
+
 - Уважайте приватность пользователей
 - Соблюдайте GDPR/CCPA
-- Настройте opt-out механизмы 
+- Настройте opt-out механизмы

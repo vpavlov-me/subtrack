@@ -59,6 +59,7 @@ vercel
 In Vercel Dashboard → Settings → Environment Variables:
 
 #### Production Environment
+
 ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
@@ -70,6 +71,7 @@ VITE_POSTHOG_HOST=https://app.posthog.com
 ```
 
 #### Preview Environment (for PRs)
+
 ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
@@ -80,7 +82,8 @@ VITE_POSTHOG_KEY=your-posthog-key
 VITE_POSTHOG_HOST=https://app.posthog.com
 ```
 
-**⚠️ Important**: 
+**⚠️ Important**:
+
 - Variables with `VITE_` prefix are exposed to the client
 - Sensitive data (webhook secrets) should use edge function proxy
 - Set variables for both Production and Preview environments
@@ -88,6 +91,7 @@ VITE_POSTHOG_HOST=https://app.posthog.com
 ### 4. Production Deployment
 
 #### Option A: CLI Deployment
+
 ```bash
 # Deploy to production
 pnpm deploy:vercel
@@ -97,6 +101,7 @@ vercel --prod --confirm
 ```
 
 #### Option B: Git-based Deployment
+
 ```bash
 # Push to main branch triggers automatic deployment
 git push origin main
@@ -122,6 +127,7 @@ After deployment, verify:
 4. Confirm the rollback
 
 ### CLI Rollback
+
 ```bash
 # List deployments
 vercel ls
@@ -133,18 +139,21 @@ vercel promote <deployment-id>
 ## 📊 Free Plan Limits & Monitoring
 
 ### Vercel Free Plan Limits
+
 - **Bandwidth**: 100 GB/month
 - **Function Execution**: 100 GB-hours/month
 - **Build Minutes**: 6,000 minutes/month
 - **Edge Function Execution**: 500,000 invocations/day
 
 ### Upgrade Triggers
+
 - Bandwidth exceeds 100 GB
 - Function execution exceeds 100 GB-hours
 - Need custom domains
 - Require team collaboration features
 
 ### Monitoring Your Usage
+
 1. Vercel Dashboard → Analytics
 2. Check bandwidth usage
 3. Monitor function execution
@@ -153,7 +162,9 @@ vercel promote <deployment-id>
 ## 🛡️ Security Configuration
 
 ### Automatic Security Headers
+
 The `vercel.json` configuration includes:
+
 - **HSTS**: Strict Transport Security
 - **X-Frame-Options**: Prevent clickjacking
 - **X-Content-Type-Options**: Prevent MIME sniffing
@@ -161,6 +172,7 @@ The `vercel.json` configuration includes:
 - **Permissions-Policy**: Restrict browser features
 
 ### Custom Domain Setup
+
 1. Vercel Dashboard → Settings → Domains
 2. Add your custom domain
 3. Configure DNS records
@@ -171,6 +183,7 @@ The `vercel.json` configuration includes:
 ### Common Issues
 
 #### Build Fails
+
 ```bash
 # Check build logs
 vercel logs
@@ -183,17 +196,20 @@ pnpm type-check
 ```
 
 #### Environment Variables Not Working
+
 - Verify variables are set for correct environment
 - Check variable names (case-sensitive)
 - Ensure no extra spaces or quotes
 - Redeploy after adding variables
 
 #### Database Connection Issues
+
 - Verify Supabase URL and keys
 - Check RLS policies
 - Test connection in Supabase dashboard
 
 #### Function Timeouts
+
 - Check edge function logs
 - Optimize function code
 - Consider increasing `maxDuration` in `vercel.json`
@@ -207,6 +223,7 @@ pnpm type-check
 ## 🚀 Advanced Configuration
 
 ### Edge Functions
+
 For server-side operations (webhooks, API calls):
 
 ```typescript
@@ -217,7 +234,9 @@ export default async function handler(req, res) {
 ```
 
 ### Custom Headers
+
 Add to `vercel.json`:
+
 ```json
 {
   "headers": [
@@ -235,6 +254,7 @@ Add to `vercel.json`:
 ```
 
 ### Performance Optimization
+
 - Enable Vercel Analytics
 - Configure image optimization
 - Use edge caching strategies
@@ -257,4 +277,4 @@ Add to `vercel.json`:
 - [Vercel Setup Guide](../VERCEL_SETUP.md) - Detailed Vercel configuration
 - [Supabase Setup](../SUPABASE_SETUP.md) - Database configuration
 - [Stripe Setup](../STRIPE_SETUP.md) - Payment integration
-- [Production Readme](../PRODUCTION_README.md) - Production considerations 
+- [Production Readme](../PRODUCTION_README.md) - Production considerations

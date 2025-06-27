@@ -1,40 +1,40 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { useSubscriptions } from '@/features/subscriptions/SubscriptionsProvider'
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useSubscriptions } from '@/features/subscriptions/SubscriptionsProvider';
 
 interface PlanGuardResult {
-  canAddSubscription: boolean
-  showUpgradeModal: boolean
-  openUpgradeModal: () => void
-  closeUpgradeModal: () => void
-  subscriptionCount: number
-  maxSubscriptions: number
+  canAddSubscription: boolean;
+  showUpgradeModal: boolean;
+  openUpgradeModal: () => void;
+  closeUpgradeModal: () => void;
+  subscriptionCount: number;
+  maxSubscriptions: number;
 }
 
 export function usePlanGuard(): PlanGuardResult {
-  const [billingStatus, setBillingStatus] = useState<string>('free')
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
-  const { subscriptions } = useSubscriptions()
+  const [billingStatus, setBillingStatus] = useState<string>('free');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const { subscriptions } = useSubscriptions();
 
   useEffect(() => {
     const loadBillingStatus = async () => {
       const { data: profile } = await supabase
         .from('profiles')
         .select('billing_status')
-        .single()
-      
-      setBillingStatus(profile?.billing_status || 'free')
-    }
+        .single();
 
-    void loadBillingStatus()
-  }, [])
+      setBillingStatus(profile?.billing_status || 'free');
+    };
 
-  const subscriptionCount = subscriptions.length
-  const maxSubscriptions = billingStatus === 'active' ? Infinity : 5
-  const canAddSubscription = subscriptionCount < maxSubscriptions
+    void loadBillingStatus();
+  }, []);
 
-  const openUpgradeModal = () => setShowUpgradeModal(true)
-  const closeUpgradeModal = () => setShowUpgradeModal(false)
+  const subscriptionCount = subscriptions.length;
+  const maxSubscriptions = billingStatus === 'active' ? Infinity : 5;
+  const canAddSubscription = subscriptionCount < maxSubscriptions;
+
+  const openUpgradeModal = () => setShowUpgradeModal(true);
+  const closeUpgradeModal = () => setShowUpgradeModal(false);
 
   return {
     canAddSubscription,
@@ -43,5 +43,5 @@ export function usePlanGuard(): PlanGuardResult {
     closeUpgradeModal,
     subscriptionCount,
     maxSubscriptions,
-  }
-} 
+  };
+}

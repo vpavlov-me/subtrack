@@ -1,15 +1,17 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
 // Берём переменные из .env.*
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as
+  | string
+  | undefined;
 
 // Мини-мок, чтобы приложение работало без реального Supabase.
 function createMockClient() {
-  type QueryResult<T = unknown> = { data: T; error: unknown | null }
+  type QueryResult<T = unknown> = { data: T; error: unknown | null };
 
-  const ok: QueryResult = { data: null, error: null }
-  const okArray: QueryResult<unknown[]> = { data: [], error: null }
+  const ok: QueryResult = { data: null, error: null };
+  const okArray: QueryResult<unknown[]> = { data: [], error: null };
 
   const query = {
     select: () => query,
@@ -21,7 +23,7 @@ function createMockClient() {
     single: () => ok,
     // Для select().single()
     then: (cb: (arg: QueryResult) => unknown) => Promise.resolve(cb(ok)),
-  }
+  };
 
   return {
     from: () => ({
@@ -41,12 +43,15 @@ function createMockClient() {
     functions: {
       invoke: async () => ({ data: null, error: null }),
     },
-  } as unknown as ReturnType<typeof createClient>
+  } as unknown as ReturnType<typeof createClient>;
 }
 
-export const supabase = (supabaseUrl && supabaseAnonKey)
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : (() => {
-      console.warn('Supabase env variables are missing. Running in offline/mock mode.')
-      return createMockClient()
-    })() 
+export const supabase =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : (() => {
+        console.warn(
+          'Supabase env variables are missing. Running in offline/mock mode.'
+        );
+        return createMockClient();
+      })();

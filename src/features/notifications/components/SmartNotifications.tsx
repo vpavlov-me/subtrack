@@ -1,22 +1,41 @@
-import { useState } from 'react'
-import { Bell, Clock, AlertTriangle, TrendingUp, DollarSign, Settings } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { toast } from 'sonner'
+import { useState } from 'react';
+import {
+  Bell,
+  Clock,
+  AlertTriangle,
+  TrendingUp,
+  DollarSign,
+  Settings,
+} from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
 interface NotificationRule {
-  id: string
-  type: 'billing' | 'spending' | 'renewal' | 'price_change' | 'unused'
-  enabled: boolean
-  threshold?: number
-  daysBefore?: number
-  channel: 'email' | 'push' | 'slack'
-  description: string
+  id: string;
+  type: 'billing' | 'spending' | 'renewal' | 'price_change' | 'unused';
+  enabled: boolean;
+  threshold?: number;
+  daysBefore?: number;
+  channel: 'email' | 'push' | 'slack';
+  description: string;
 }
 
 const DEFAULT_RULES: NotificationRule[] = [
@@ -26,7 +45,7 @@ const DEFAULT_RULES: NotificationRule[] = [
     enabled: true,
     daysBefore: 3,
     channel: 'email',
-    description: 'Get notified 3 days before subscription renewals'
+    description: 'Get notified 3 days before subscription renewals',
   },
   {
     id: 'high_spending',
@@ -34,7 +53,7 @@ const DEFAULT_RULES: NotificationRule[] = [
     enabled: true,
     threshold: 100,
     channel: 'email',
-    description: 'Alert when monthly spending exceeds $100'
+    description: 'Alert when monthly spending exceeds $100',
   },
   {
     id: 'price_increase',
@@ -42,7 +61,7 @@ const DEFAULT_RULES: NotificationRule[] = [
     enabled: true,
     threshold: 10,
     channel: 'push',
-    description: 'Notify when subscription price increases by more than 10%'
+    description: 'Notify when subscription price increases by more than 10%',
   },
   {
     id: 'unused_subscriptions',
@@ -50,7 +69,7 @@ const DEFAULT_RULES: NotificationRule[] = [
     enabled: true,
     threshold: 30,
     channel: 'email',
-    description: 'Remind about unused subscriptions after 30 days'
+    description: 'Remind about unused subscriptions after 30 days',
   },
   {
     id: 'spending_trend',
@@ -58,62 +77,66 @@ const DEFAULT_RULES: NotificationRule[] = [
     enabled: true,
     threshold: 20,
     channel: 'slack',
-    description: 'Weekly spending trend reports'
-  }
-]
+    description: 'Weekly spending trend reports',
+  },
+];
 
 export function SmartNotifications() {
-  const [rules, setRules] = useState<NotificationRule[]>(DEFAULT_RULES)
-  const [saving, setSaving] = useState(false)
+  const [rules, setRules] = useState<NotificationRule[]>(DEFAULT_RULES);
+  const [saving, setSaving] = useState(false);
 
   const updateRule = (id: string, updates: Partial<NotificationRule>) => {
-    setRules(prev => prev.map(rule => 
-      rule.id === id ? { ...rule, ...updates } : rule
-    ))
-  }
+    setRules(prev =>
+      prev.map(rule => (rule.id === id ? { ...rule, ...updates } : rule))
+    );
+  };
 
   const toggleRule = (id: string) => {
-    updateRule(id, { enabled: !rules.find(r => r.id === id)?.enabled })
-  }
+    updateRule(id, { enabled: !rules.find(r => r.id === id)?.enabled });
+  };
 
   const handleSave = async () => {
-    setSaving(true)
+    setSaving(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      toast.success('Notification preferences saved successfully')
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('Notification preferences saved successfully');
     } catch (error) {
-      toast.error('Failed to save notification preferences')
+      toast.error('Failed to save notification preferences');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const getRuleIcon = (type: string) => {
     switch (type) {
       case 'billing':
-        return <Clock className="h-4 w-4" />
+        return <Clock className="h-4 w-4" />;
       case 'spending':
-        return <DollarSign className="h-4 w-4" />
+        return <DollarSign className="h-4 w-4" />;
       case 'renewal':
-        return <Bell className="h-4 w-4" />
+        return <Bell className="h-4 w-4" />;
       case 'price_change':
-        return <TrendingUp className="h-4 w-4" />
+        return <TrendingUp className="h-4 w-4" />;
       case 'unused':
-        return <AlertTriangle className="h-4 w-4" />
+        return <AlertTriangle className="h-4 w-4" />;
       default:
-        return <Settings className="h-4 w-4" />
+        return <Settings className="h-4 w-4" />;
     }
-  }
+  };
 
   const getChannelBadge = (channel: string) => {
     const colors = {
       email: 'bg-blue-100 text-blue-800',
       push: 'bg-green-100 text-green-800',
-      slack: 'bg-purple-100 text-purple-800'
-    }
-    return <Badge className={colors[channel as keyof typeof colors]}>{channel}</Badge>
-  }
+      slack: 'bg-purple-100 text-purple-800',
+    };
+    return (
+      <Badge className={colors[channel as keyof typeof colors]}>
+        {channel}
+      </Badge>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -122,7 +145,8 @@ export function SmartNotifications() {
         <div>
           <h2 className="text-2xl font-bold">Smart Notifications</h2>
           <p className="text-muted-foreground">
-            Configure intelligent notifications to stay on top of your subscriptions
+            Configure intelligent notifications to stay on top of your
+            subscriptions
           </p>
         </div>
         <Button onClick={handleSave} disabled={saving}>
@@ -132,20 +156,26 @@ export function SmartNotifications() {
 
       {/* Notification Rules */}
       <div className="grid gap-4">
-        {rules.map((rule) => (
+        {rules.map(rule => (
           <Card key={rule.id}>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {getRuleIcon(rule.type)}
                   <div>
-                    <CardTitle className="text-lg">{rule.description}</CardTitle>
+                    <CardTitle className="text-lg">
+                      {rule.description}
+                    </CardTitle>
                     <CardDescription className="flex items-center gap-2 mt-1">
                       {getChannelBadge(rule.channel)}
                       {rule.threshold && (
                         <span className="text-sm text-muted-foreground">
                           Threshold: {rule.threshold}
-                          {rule.type === 'spending' ? '$' : rule.type === 'price_change' ? '%' : ' days'}
+                          {rule.type === 'spending'
+                            ? '$'
+                            : rule.type === 'price_change'
+                              ? '%'
+                              : ' days'}
                         </span>
                       )}
                     </CardDescription>
@@ -165,7 +195,9 @@ export function SmartNotifications() {
                     <Label>Notification Channel</Label>
                     <Select
                       value={rule.channel}
-                      onValueChange={(value) => updateRule(rule.id, { channel: value as any })}
+                      onValueChange={value =>
+                        updateRule(rule.id, { channel: value as any })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -185,7 +217,11 @@ export function SmartNotifications() {
                       <Input
                         type="number"
                         value={rule.threshold}
-                        onChange={(e) => updateRule(rule.id, { threshold: parseFloat(e.target.value) })}
+                        onChange={e =>
+                          updateRule(rule.id, {
+                            threshold: parseFloat(e.target.value),
+                          })
+                        }
                         placeholder="Enter threshold"
                       />
                     </div>
@@ -198,7 +234,11 @@ export function SmartNotifications() {
                       <Input
                         type="number"
                         value={rule.daysBefore}
-                        onChange={(e) => updateRule(rule.id, { daysBefore: parseInt(e.target.value) })}
+                        onChange={e =>
+                          updateRule(rule.id, {
+                            daysBefore: parseInt(e.target.value),
+                          })
+                        }
                         placeholder="Enter days"
                       />
                     </div>
@@ -230,13 +270,17 @@ export function SmartNotifications() {
               <div className="text-2xl font-bold text-blue-600">
                 {rules.filter(r => r.enabled && r.channel === 'email').length}
               </div>
-              <div className="text-sm text-muted-foreground">Email Notifications</div>
+              <div className="text-sm text-muted-foreground">
+                Email Notifications
+              </div>
             </div>
             <div className="text-center p-4 bg-muted rounded-lg">
               <div className="text-2xl font-bold text-green-600">
                 {rules.filter(r => r.enabled && r.channel === 'push').length}
               </div>
-              <div className="text-sm text-muted-foreground">Push Notifications</div>
+              <div className="text-sm text-muted-foreground">
+                Push Notifications
+              </div>
             </div>
           </div>
         </CardContent>
@@ -274,5 +318,5 @@ export function SmartNotifications() {
         </CardContent>
       </Card>
     </div>
-  )
-} 
+  );
+}

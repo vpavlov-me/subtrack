@@ -1,4 +1,4 @@
-import { SmartNotifications } from '@/features/notifications/components/SmartNotifications'
+import { SmartNotifications } from '@/features/notifications/components/SmartNotifications';
 
 export default function Notifications() {
   return (
@@ -7,5 +7,5 @@ export default function Notifications() {
         <SmartNotifications />
       </div>
     </div>
-  )
-} 
+  );
+}

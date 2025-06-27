@@ -5,8 +5,20 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Subscription, SubscriptionUpdate } from '../types';
 
 const formSchema = z.object({
@@ -24,7 +36,11 @@ interface Props {
   onSave: (data: SubscriptionUpdate) => void;
 }
 
-export function SubscriptionEditDialog({ subscription, onClose, onSave }: Props) {
+export function SubscriptionEditDialog({
+  subscription,
+  onClose,
+  onSave,
+}: Props) {
   const {
     register,
     handleSubmit,
@@ -88,7 +104,12 @@ export function SubscriptionEditDialog({ subscription, onClose, onSave }: Props)
           <div className="space-y-2">
             <Label htmlFor="billingCycle">Billing Cycle</Label>
             <Select
-              onValueChange={(value) => setValue('billingCycle', value as 'monthly' | 'yearly' | 'custom')}
+              onValueChange={value =>
+                setValue(
+                  'billingCycle',
+                  value as 'monthly' | 'yearly' | 'custom'
+                )
+              }
               defaultValue={subscription?.billingCycle}
             >
               <SelectTrigger>
@@ -101,7 +122,9 @@ export function SubscriptionEditDialog({ subscription, onClose, onSave }: Props)
               </SelectContent>
             </Select>
             {errors.billingCycle && (
-              <p className="text-sm text-red-500">{errors.billingCycle.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.billingCycle.message}
+              </p>
             )}
           </div>
 
@@ -113,7 +136,9 @@ export function SubscriptionEditDialog({ subscription, onClose, onSave }: Props)
               {...register('nextBillingDate', { valueAsDate: true })}
             />
             {errors.nextBillingDate && (
-              <p className="text-sm text-red-500">{errors.nextBillingDate.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.nextBillingDate.message}
+              </p>
             )}
           </div>
 
@@ -127,4 +152,4 @@ export function SubscriptionEditDialog({ subscription, onClose, onSave }: Props)
       </DialogContent>
     </Dialog>
   );
-} 
+}

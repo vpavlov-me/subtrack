@@ -1,9 +1,9 @@
-import { AdvancedTeamFeatures } from '@/features/teams/components/AdvancedTeamFeatures'
-import Skeleton from '@/components/ui/skeleton'
+import { AdvancedTeamFeatures } from '@/features/teams/components/AdvancedTeamFeatures';
+import Skeleton from '@/components/ui/skeleton';
 
 export default function TeamAdvanced() {
   // For demo, add loading state
-  const loading = false
+  const loading = false;
   if (loading) {
     return (
       <div className="container mx-auto p-6">
@@ -13,7 +13,7 @@ export default function TeamAdvanced() {
           <Skeleton className="h-40 w-full" />
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -22,5 +22,5 @@ export default function TeamAdvanced() {
         <AdvancedTeamFeatures />
       </div>
     </div>
-  )
-} 
+  );
+}

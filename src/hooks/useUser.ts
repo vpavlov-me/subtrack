@@ -1,6 +1,6 @@
-import { useAuth } from '@workos-inc/authkit-react'
-import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useAuth } from '@workos-inc/authkit-react';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 /**
  * useUser
@@ -11,15 +11,15 @@ import { useLocation } from 'react-router-dom'
  *     чтобы после успешного логина вернуться обратно.
  */
 export const useUser = () => {
-  const { user, isLoading, signIn } = useAuth()
-  const location = useLocation()
+  const { user, isLoading, signIn } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     if (!isLoading && !user) {
       // Перенаправляем на WorkOS hosted-login, сохраняя, куда возвращаться
-      signIn({ state: { returnTo: location.pathname } })
+      signIn({ state: { returnTo: location.pathname } });
     }
-  }, [isLoading, user, signIn, location])
+  }, [isLoading, user, signIn, location]);
 
-  return user
-} 
+  return user;
+};

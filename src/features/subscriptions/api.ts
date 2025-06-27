@@ -1,23 +1,23 @@
 // Здесь будут функции для работы с Supabase
 // Например: получение, добавление, удаление подписок
 
-import { supabase } from '@/lib/supabase'
-import { Subscription, SubscriptionCreate, SubscriptionUpdate } from './types'
-import { parseCsvSubscriptions, CsvParseResult } from '@/lib/csv'
+import { supabase } from '@/lib/supabase';
+import { Subscription, SubscriptionCreate, SubscriptionUpdate } from './types';
+import { parseCsvSubscriptions, CsvParseResult } from '@/lib/csv';
 
 // Тип строки из БД (snake_case)
 interface DbSubscriptionRow {
-  id: string
-  name: string
-  price: number | string
-  currency?: string | null
-  billing_cycle: 'monthly' | 'yearly' | 'custom'
-  next_billing_date: string
-  category?: string | null
-  payment_method?: string | null
-  notes?: string | null
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  price: number | string;
+  currency?: string | null;
+  billing_cycle: 'monthly' | 'yearly' | 'custom';
+  next_billing_date: string;
+  category?: string | null;
+  payment_method?: string | null;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 // Helpers для маппинга snake_case ↔ camelCase
@@ -34,7 +34,7 @@ function fromDb(row: DbSubscriptionRow): Subscription {
     notes: row.notes ?? undefined,
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
-  }
+  };
 }
 
 function toDb(input: SubscriptionCreate | SubscriptionUpdate) {
@@ -47,7 +47,7 @@ function toDb(input: SubscriptionCreate | SubscriptionUpdate) {
     category: input.category ?? 'General',
     payment_method: input.paymentMethod ?? null,
     notes: input.notes ?? null,
-  }
+  };
 }
 
 // Получение подписок из Supabase
@@ -55,59 +55,61 @@ export async function fetchSubscriptions(): Promise<Subscription[]> {
   const { data, error } = await supabase
     .from('subscriptions')
     .select('*')
-    .order('next_billing_date', { ascending: true })
+    .order('next_billing_date', { ascending: true });
 
   if (error) {
-    console.error('Error fetching subscriptions:', error.message)
-    return []
+    console.error('Error fetching subscriptions:', error.message);
+    return [];
   }
 
-  return (data ?? []).map(fromDb)
+  return (data ?? []).map(fromDb);
 }
 
 // Добавление подписки
-export async function addSubscription(subscription: SubscriptionCreate): Promise<Subscription> {
+export async function addSubscription(
+  subscription: SubscriptionCreate
+): Promise<Subscription> {
   const { data, error } = await supabase
     .from('subscriptions')
     .insert(toDb(subscription))
     .select()
-    .single()
+    .single();
 
   if (error) {
-    console.error('Error adding subscription:', error.message)
-    throw new Error('Failed to add subscription')
+    console.error('Error adding subscription:', error.message);
+    throw new Error('Failed to add subscription');
   }
 
-  return fromDb(data)
+  return fromDb(data);
 }
 
 // Обновление подписки
-export async function updateSubscription(id: string, subscription: SubscriptionUpdate): Promise<Subscription> {
+export async function updateSubscription(
+  id: string,
+  subscription: SubscriptionUpdate
+): Promise<Subscription> {
   const { data, error } = await supabase
     .from('subscriptions')
     .update(toDb(subscription))
     .eq('id', id)
     .select()
-    .single()
+    .single();
 
   if (error) {
-    console.error('Error updating subscription:', error.message)
-    throw new Error('Failed to update subscription')
+    console.error('Error updating subscription:', error.message);
+    throw new Error('Failed to update subscription');
   }
 
-  return fromDb(data)
+  return fromDb(data);
 }
 
 // Удаление подписки
 export async function deleteSubscription(id: string): Promise<void> {
-  const { error } = await supabase
-    .from('subscriptions')
-    .delete()
-    .eq('id', id)
+  const { error } = await supabase.from('subscriptions').delete().eq('id', id);
 
   if (error) {
-    console.error('Error deleting subscription:', error.message)
-    throw new Error('Failed to delete subscription')
+    console.error('Error deleting subscription:', error.message);
+    throw new Error('Failed to delete subscription');
   }
 }
 
@@ -122,10 +124,7 @@ export function exportToCSV(subscriptions: Subscription[]): string {
       sub.nextBillingDate.toISOString().split('T')[0],
     ]);
 
-    return [
-      headers.join(','),
-      ...rows.map(row => row.join(',')),
-    ].join('\n');
+    return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
   } catch (error) {
     console.error('Error exporting to CSV:', error);
     throw new Error('Failed to export subscriptions');
@@ -136,38 +135,39 @@ export function exportToCSV(subscriptions: Subscription[]): string {
 export async function importFromCSV(csv: string): Promise<CsvParseResult> {
   try {
     // Используем новый CSV парсер
-    const parseResult = parseCsvSubscriptions(csv)
-    
+    const parseResult = parseCsvSubscriptions(csv);
+
     if (!parseResult.success || !parseResult.data) {
-      return parseResult
+      return parseResult;
     }
 
     // Bulk insert с обработкой ошибок
     const { data, error } = await supabase
       .from('subscriptions')
       .insert(parseResult.data.map(toDb))
-      .select()
+      .select();
 
     if (error) {
-      console.error('Error importing subscriptions:', error.message)
+      console.error('Error importing subscriptions:', error.message);
       return {
         success: false,
         errors: [`Database error: ${error.message}`],
-        warnings: parseResult.warnings
-      }
+        warnings: parseResult.warnings,
+      };
     }
 
     return {
       success: true,
       data: (data ?? []).map(fromDb),
-      warnings: parseResult.warnings
-    }
-
+      warnings: parseResult.warnings,
+    };
   } catch (error) {
     console.error('Error importing from CSV:', error);
     return {
       success: false,
-      errors: [`Failed to import subscriptions: ${error instanceof Error ? error.message : 'Unknown error'}`]
-    }
+      errors: [
+        `Failed to import subscriptions: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      ],
+    };
   }
-} 
+}

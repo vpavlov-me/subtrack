@@ -88,7 +88,11 @@ export const trackCSVImportEvent = (
 
 // Helper function to track team events
 export const trackTeamEvent = (
-  event: 'member_invited' | 'member_removed' | 'seat_limit_reached' | 'upgrade_prompted',
+  event:
+    | 'member_invited'
+    | 'member_removed'
+    | 'seat_limit_reached'
+    | 'upgrade_prompted',
   details: {
     teamId: string;
     memberEmail?: string;
@@ -110,7 +114,12 @@ export const trackTeamEvent = (
 
 // Helper function to track onboarding events
 export const trackOnboardingEvent = (
-  step: 'started' | 'csv_imported' | 'reminder_set' | 'invite_sent' | 'completed',
+  step:
+    | 'started'
+    | 'csv_imported'
+    | 'reminder_set'
+    | 'invite_sent'
+    | 'completed',
   details?: {
     stepNumber?: number;
     totalSteps?: number;
@@ -130,7 +139,11 @@ export const trackOnboardingEvent = (
 
 // Helper function to track billing events
 export const trackBillingEvent = (
-  event: 'upgrade_clicked' | 'downgrade_clicked' | 'payment_successful' | 'payment_failed',
+  event:
+    | 'upgrade_clicked'
+    | 'downgrade_clicked'
+    | 'payment_successful'
+    | 'payment_failed',
   details: {
     plan?: string;
     amount?: number;
@@ -150,7 +163,12 @@ export const trackBillingEvent = (
 
 // Helper function to track feature usage
 export const trackFeatureUsage = (
-  feature: 'dashboard' | 'subscriptions' | 'analytics' | 'team_settings' | 'billing',
+  feature:
+    | 'dashboard'
+    | 'subscriptions'
+    | 'analytics'
+    | 'team_settings'
+    | 'billing',
   action: 'viewed' | 'created' | 'updated' | 'deleted'
 ) => {
   if (import.meta.env.VITE_POSTHOG_KEY) {
@@ -179,4 +197,4 @@ export const trackError = (
       user_id: context.userId,
     });
   }
-}; 
+};

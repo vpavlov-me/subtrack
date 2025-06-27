@@ -19,7 +19,7 @@
    - Interval: Monthly
 
 2. **Pro Plan**
-   - Name: "Pro" 
+   - Name: "Pro"
    - Price: $29/month
    - Billing: Recurring
    - Interval: Monthly
@@ -31,6 +31,7 @@
    - Interval: Monthly
 
 ### Годовые планы (опционально):
+
 - Создайте те же планы с годовым биллингом
 - Примените скидку (например, 20%)
 
@@ -93,11 +94,13 @@ STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
 ## 7. Тестирование
 
 ### Тестовые карты:
+
 - **Success**: `4242 4242 4242 4242`
 - **Decline**: `4000 0000 0000 0002`
 - **3D Secure**: `4000 0025 0000 3155`
 
 ### Тестовые данные:
+
 - Expiry: любая будущая дата
 - CVC: любые 3 цифры
 - ZIP: любые 5 цифр
@@ -140,7 +143,8 @@ STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
 ## 12. Аналитика
 
 В Stripe Dashboard > Analytics:
+
 - Revenue metrics
 - Subscription metrics
 - Customer metrics
-- Churn analysis 
+- Churn analysis

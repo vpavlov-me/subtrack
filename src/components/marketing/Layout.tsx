@@ -1,5 +1,5 @@
-import { ReactNode } from 'react'
-import MarketingHeader from './Header'
+import { ReactNode } from 'react';
+import MarketingHeader from './Header';
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
@@ -10,5 +10,5 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
         © {new Date().getFullYear()} SubTrack. All rights reserved.
       </footer>
     </div>
-  )
-} 
+  );
+}

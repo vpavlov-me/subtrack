@@ -1,23 +1,36 @@
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { stripePromise } from '@/lib/stripe'
-import { supabase } from '@/lib/supabase'
-import { Crown, Check, X } from 'lucide-react'
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { stripePromise } from '@/lib/stripe';
+import { supabase } from '@/lib/supabase';
+import { Crown, Check, X } from 'lucide-react';
 
 interface UpgradeModalProps {
-  open: boolean
-  onClose: () => void
-  currentCount: number
-  maxCount: number
+  open: boolean;
+  onClose: () => void;
+  currentCount: number;
+  maxCount: number;
 }
 
-export function UpgradeModal({ open, onClose, currentCount, maxCount }: UpgradeModalProps) {
+export function UpgradeModal({
+  open,
+  onClose,
+  currentCount,
+  maxCount,
+}: UpgradeModalProps) {
   const handleUpgrade = async () => {
-    const stripe = await stripePromise
-    if (!stripe) return
+    const stripe = await stripePromise;
+    if (!stripe) return;
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
 
     const { error } = await stripe.redirectToCheckout({
       lineItems: [{ price: import.meta.env.VITE_STRIPE_PRICE_ID, quantity: 1 }],
@@ -25,12 +38,12 @@ export function UpgradeModal({ open, onClose, currentCount, maxCount }: UpgradeM
       successUrl: `${window.location.origin}/dashboard?upgrade=success`,
       cancelUrl: window.location.href,
       clientReferenceId: user.id,
-    })
+    });
 
     if (error) {
-      console.error('Stripe checkout error:', error)
+      console.error('Stripe checkout error:', error);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -41,7 +54,7 @@ export function UpgradeModal({ open, onClose, currentCount, maxCount }: UpgradeM
             Upgrade to Pro
           </DialogTitle>
           <DialogDescription>
-            You've reached the free plan limit of {maxCount} subscriptions. 
+            You've reached the free plan limit of {maxCount} subscriptions.
             Upgrade to Pro for unlimited subscriptions and advanced features.
           </DialogDescription>
         </DialogHeader>
@@ -53,7 +66,8 @@ export function UpgradeModal({ open, onClose, currentCount, maxCount }: UpgradeM
               <span className="font-medium">Free Plan Limit</span>
             </div>
             <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-              Current: {currentCount} subscriptions • Limit: {maxCount} subscriptions
+              Current: {currentCount} subscriptions • Limit: {maxCount}{' '}
+              subscriptions
             </p>
           </div>
 
@@ -90,5 +104,5 @@ export function UpgradeModal({ open, onClose, currentCount, maxCount }: UpgradeM
         </div>
       </DialogContent>
     </Dialog>
-  )
-} 
+  );
+}

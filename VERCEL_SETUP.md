@@ -11,6 +11,7 @@
 В Vercel Dashboard > Settings > General:
 
 ### Build & Development Settings:
+
 - **Framework Preset**: Vite
 - **Build Command**: `pnpm build`
 - **Output Directory**: `dist`
@@ -18,6 +19,7 @@
 - **Node.js Version**: 20.x
 
 ### Root Directory:
+
 - Оставьте пустым (корень проекта)
 
 ## 3. Настройка переменных окружения
@@ -25,6 +27,7 @@
 В Vercel Dashboard > Settings > Environment Variables:
 
 ### Production:
+
 ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
@@ -36,6 +39,7 @@ VITE_POSTHOG_HOST=https://app.posthog.com
 ```
 
 ### Preview (для PR):
+
 ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
@@ -96,11 +100,13 @@ VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your-stripe-key
 ## 9. Настройка Monitoring
 
 ### Sentry Integration:
+
 1. В Sentry создайте проект
 2. Добавьте DSN в переменные окружения
 3. Настройте source maps upload
 
 ### PostHog Integration:
+
 1. В PostHog создайте проект
 2. Добавьте ключи в переменные окружения
 3. Настройте event tracking
@@ -116,10 +122,12 @@ VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your-stripe-key
 ## 11. Настройка Performance
 
 ### Image Optimization:
+
 - Vercel автоматически оптимизирует изображения
 - Используйте `next/image` или `vercel/image`
 
 ### Caching:
+
 - Static assets: автоматически кешируются
 - API routes: настройте кеширование в коде
 
@@ -142,6 +150,7 @@ VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your-stripe-key
 ## 14. Тестирование
 
 ### Локальное тестирование:
+
 ```bash
 # Установка Vercel CLI
 npm i -g vercel
@@ -154,6 +163,7 @@ vercel dev
 ```
 
 ### Production тестирование:
+
 1. Создайте PR
 2. Проверьте preview deployment
 3. Протестируйте функциональность
@@ -164,16 +174,19 @@ vercel dev
 ### Common Issues:
 
 **Build fails**:
+
 - Проверьте логи сборки
 - Убедитесь, что все зависимости установлены
 - Проверьте TypeScript ошибки
 
 **Environment variables not working**:
+
 - Убедитесь, что переменные добавлены в правильную среду
 - Проверьте синтаксис
 - Перезапустите деплой
 
 **Domain not working**:
+
 - Проверьте DNS настройки
 - Убедитесь, что домен добавлен в Vercel
-- Проверьте SSL сертификат 
+- Проверьте SSL сертификат

@@ -33,21 +33,25 @@ VITE_POSTHOG_HOST=https://app.posthog.com
 ## Local Development
 
 1. **Start Supabase**
+
    ```bash
    supabase start
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Run development server**
+
    ```bash
    pnpm dev
    ```
 
 4. **Run tests**
+
    ```bash
    pnpm test          # Unit tests
    pnpm e2e           # E2E tests
@@ -85,15 +89,18 @@ supabase functions serve
 ## Testing
 
 ### Unit Tests
+
 - Framework: Vitest
 - Environment: jsdom
 - Location: `src/**/*.test.ts`
 
 ### E2E Tests
+
 - Framework: Playwright
 - Location: `e2e/**/*.spec.ts`
 
 ### Test Coverage
+
 ```bash
 pnpm test --coverage
 ```
@@ -101,32 +108,38 @@ pnpm test --coverage
 ## Code Quality
 
 ### Linting
+
 ```bash
 pnpm lint
 ```
 
 ### Type Checking
+
 ```bash
 pnpm build
 ```
 
 ### Pre-commit Hooks
+
 Husky runs lint and tests before each commit.
 
 ## Deployment
 
 ### Vercel
+
 - Automatic deployments on push to `main`
 - Preview deployments on pull requests
 - Environment variables configured in Vercel dashboard
 
 ### Supabase
+
 - Database migrations applied automatically
 - Edge functions deployed via CLI
 
 ## Architecture
 
 ### Frontend
+
 - React 19 + TypeScript
 - Vite for build tooling
 - TailwindCSS + shadcn/ui
@@ -134,16 +147,19 @@ Husky runs lint and tests before each commit.
 - React Hook Form + Zod
 
 ### Backend
+
 - Supabase (PostgreSQL)
 - Row Level Security (RLS)
 - Edge Functions
 - Real-time subscriptions
 
 ### Authentication
+
 - Supabase Auth
 - WorkOS AuthKit for SSO
 
 ### State Management
+
 - React Context for global state
 - Local state with useState/useReducer
 
@@ -171,12 +187,15 @@ src/features/
 ### Common Issues
 
 **Playwright tests failing**
+
 - Ensure browsers are installed: `npx playwright install`
 
 **Supabase connection issues**
+
 - Check if Supabase is running: `supabase status`
 - Verify environment variables
 
 **Build failures**
+
 - Clear node_modules: `rm -rf node_modules pnpm-lock.yaml && pnpm install`
-- Check TypeScript errors: `pnpm build` 
+- Check TypeScript errors: `pnpm build`

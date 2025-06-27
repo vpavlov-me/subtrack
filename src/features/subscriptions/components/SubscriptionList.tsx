@@ -1,8 +1,14 @@
 import { Subscription } from '../types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { getServiceIconUrl } from '@/features/subscriptions/icon'
+import { getServiceIconUrl } from '@/features/subscriptions/icon';
 
 interface Props {
   subscriptions: Subscription[];
@@ -16,9 +22,14 @@ export function SubscriptionList({ subscriptions, onDelete, onEdit }: Props) {
   }
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {subscriptions.map((sub) => (
+      {subscriptions.map(sub => (
         <Card key={sub.id} className="relative">
-          <img src={getServiceIconUrl(sub.name)} alt={`${sub.name} logo`} loading="lazy" className="absolute -top-4 -left-4 w-8 h-8 rounded-md bg-white shadow" />
+          <img
+            src={getServiceIconUrl(sub.name)}
+            alt={`${sub.name} logo`}
+            loading="lazy"
+            className="absolute -top-4 -left-4 w-8 h-8 rounded-md bg-white shadow"
+          />
           <CardHeader>
             <CardTitle>{sub.name}</CardTitle>
             <CardDescription>
@@ -27,8 +38,11 @@ export function SubscriptionList({ subscriptions, onDelete, onEdit }: Props) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
-              {sub.currency ? sub.currency + ' ' : '$'}{sub.price.toFixed(2)}
-              <span className="text-sm text-muted-foreground">/{sub.billingCycle}</span>
+              {sub.currency ? sub.currency + ' ' : '$'}
+              {sub.price.toFixed(2)}
+              <span className="text-sm text-muted-foreground">
+                /{sub.billingCycle}
+              </span>
             </p>
             <div className="absolute top-2 right-2 flex gap-2">
               {onEdit && (
@@ -57,4 +71,4 @@ export function SubscriptionList({ subscriptions, onDelete, onEdit }: Props) {
       ))}
     </div>
   );
-} 
+}

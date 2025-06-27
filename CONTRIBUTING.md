@@ -18,18 +18,21 @@ Thank you for your interest in contributing to SubTrack! This document provides 
 ## 📋 Development Setup
 
 ### Prerequisites
+
 - Node.js 20+
 - npm 10+
 - Git
 - Supabase CLI (for local development)
 
 ### Environment Setup
+
 1. Copy `.env.example` to `.env.local`
 2. Set up your Supabase project
 3. Configure environment variables
 4. Run database migrations: `supabase db reset`
 
 ### Available Scripts
+
 ```bash
 npm run dev          # Start development server
 npm run build        # Build for production
@@ -73,16 +76,19 @@ SubTrack/
 ## 🧪 Testing
 
 ### Unit Tests
+
 - **Framework**: Vitest
 - **Location**: `*.test.ts` files alongside source code
 - **Run**: `npm run test`
 
 ### E2E Tests
+
 - **Framework**: Playwright
 - **Location**: `e2e/` directory
 - **Run**: `npm run test:e2e`
 
 ### Test Guidelines
+
 - Write tests for all new features
 - Maintain >80% code coverage
 - Test both success and error scenarios
@@ -92,24 +98,28 @@ SubTrack/
 ## 📝 Code Style
 
 ### TypeScript
+
 - Use strict TypeScript configuration
 - Prefer interfaces over types for object shapes
 - Use proper type annotations
 - Avoid `any` type
 
 ### React
+
 - Use functional components with hooks
 - Follow React best practices
 - Use proper prop types
 - Implement proper error boundaries
 
 ### Styling
+
 - Use Tailwind CSS for styling
 - Follow mobile-first approach
 - Ensure accessibility compliance
 - Support light/dark themes
 
 ### Naming Conventions
+
 - **Files**: kebab-case (`subscription-form.tsx`)
 - **Components**: PascalCase (`SubscriptionForm`)
 - **Functions**: camelCase (`getSubscriptionData`)
@@ -119,6 +129,7 @@ SubTrack/
 ## 🔄 Git Workflow
 
 ### Branch Naming
+
 - `feature/feature-name` - New features
 - `fix/bug-description` - Bug fixes
 - `hotfix/critical-fix` - Critical fixes
@@ -126,6 +137,7 @@ SubTrack/
 - `refactor/component-name` - Code refactoring
 
 ### Commit Messages
+
 Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
@@ -137,6 +149,7 @@ type(scope): description
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -146,6 +159,7 @@ type(scope): description
 - `chore`: Build/tooling changes
 
 **Examples:**
+
 ```
 feat(subscriptions): add subscription limit enforcement
 fix(billing): resolve Stripe webhook processing issue
@@ -153,6 +167,7 @@ docs(readme): update installation instructions
 ```
 
 ### Pull Request Process
+
 1. **Title**: Use conventional commit format
 2. **Description**: Use the provided template
 3. **Labels**: Add appropriate labels
@@ -163,6 +178,7 @@ docs(readme): update installation instructions
 ## 🐛 Bug Reports
 
 When reporting bugs, please include:
+
 - Clear description of the issue
 - Steps to reproduce
 - Expected vs actual behavior
@@ -173,6 +189,7 @@ When reporting bugs, please include:
 ## 💡 Feature Requests
 
 When requesting features, please include:
+
 - Clear description of the feature
 - Problem it solves
 - Proposed solution
@@ -197,6 +214,7 @@ When requesting features, please include:
 ## 🤝 Code Review
 
 ### Review Guidelines
+
 - Be constructive and respectful
 - Focus on code quality and functionality
 - Check for security issues
@@ -204,6 +222,7 @@ When requesting features, please include:
 - Verify documentation updates
 
 ### Review Checklist
+
 - [ ] Code follows project conventions
 - [ ] Tests are included and passing
 - [ ] Documentation is updated
@@ -214,6 +233,7 @@ When requesting features, please include:
 ## 🏆 Recognition
 
 Contributors will be recognized in:
+
 - Project README
 - Release notes
 - GitHub contributors page
@@ -231,4 +251,4 @@ By contributing to SubTrack, you agree that your contributions will be licensed 
 
 ---
 
-Thank you for contributing to SubTrack! 🚀 
+Thank you for contributing to SubTrack! 🚀

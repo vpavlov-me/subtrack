@@ -1,196 +1,247 @@
-import { useState, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { Upload, FileText, CheckCircle, AlertCircle, X, Eye, EyeOff } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { parseCSV } from '@/lib/csv'
-import { toast } from 'sonner'
+import { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import {
+  Upload,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  X,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { parseCSV } from '@/lib/csv';
+import { toast } from 'sonner';
 
 interface CSVRow {
-  [key: string]: string
+  [key: string]: string;
 }
 
 interface FieldMapping {
-  name: string
-  price: string
-  category: string
-  billingCycle: string
-  nextBillingDate: string
-  description: string
+  name: string;
+  price: string;
+  category: string;
+  billingCycle: string;
+  nextBillingDate: string;
+  description: string;
 }
 
 interface ValidationError {
-  row: number
-  field: string
-  message: string
+  row: number;
+  field: string;
+  message: string;
 }
 
-const REQUIRED_FIELDS = ['name', 'price']
+const REQUIRED_FIELDS = ['name', 'price'];
 const FIELD_OPTIONS = [
   { value: 'name', label: 'Subscription Name' },
   { value: 'price', label: 'Price' },
   { value: 'category', label: 'Category' },
   { value: 'billingCycle', label: 'Billing Cycle' },
   { value: 'nextBillingDate', label: 'Next Billing Date' },
-  { value: 'description', label: 'Description' }
-]
+  { value: 'description', label: 'Description' },
+];
 
 export function EnhancedCSVImport() {
-  const [csvData, setCsvData] = useState<CSVRow[]>([])
-  const [headers, setHeaders] = useState<string[]>([])
+  const [csvData, setCsvData] = useState<CSVRow[]>([]);
+  const [headers, setHeaders] = useState<string[]>([]);
   const [fieldMapping, setFieldMapping] = useState<FieldMapping>({
     name: '',
     price: '',
     category: '',
     billingCycle: '',
     nextBillingDate: '',
-    description: ''
-  })
-  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([])
-  const [showPreview, setShowPreview] = useState(false)
-  const [autoMap, setAutoMap] = useState(true)
-  const [isImporting, setIsImporting] = useState(false)
+    description: '',
+  });
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>(
+    []
+  );
+  const [showPreview, setShowPreview] = useState(false);
+  const [autoMap, setAutoMap] = useState(true);
+  const [isImporting, setIsImporting] = useState(false);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0]
-    if (!file) return
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
 
-    try {
-      const text = await file.text()
-      const { data, headers: csvHeaders } = parseCSV(text)
-      
-      setCsvData(data)
-      setHeaders(csvHeaders)
-      
-      if (autoMap) {
-        // Auto-map fields based on common patterns
-        const autoMapping: Partial<FieldMapping> = {}
-        csvHeaders.forEach((header: string) => {
-          const lowerHeader = header.toLowerCase()
-          if (lowerHeader.includes('name') || lowerHeader.includes('service')) {
-            autoMapping.name = header
-          } else if (lowerHeader.includes('price') || lowerHeader.includes('cost') || lowerHeader.includes('amount')) {
-            autoMapping.price = header
-          } else if (lowerHeader.includes('category') || lowerHeader.includes('type')) {
-            autoMapping.category = header
-          } else if (lowerHeader.includes('cycle') || lowerHeader.includes('billing')) {
-            autoMapping.billingCycle = header
-          } else if (lowerHeader.includes('date') || lowerHeader.includes('next')) {
-            autoMapping.nextBillingDate = header
-          } else if (lowerHeader.includes('description') || lowerHeader.includes('notes')) {
-            autoMapping.description = header
-          }
-        })
-        setFieldMapping(prev => ({ ...prev, ...autoMapping }))
+      try {
+        const text = await file.text();
+        const { data, headers: csvHeaders } = parseCSV(text);
+
+        setCsvData(data);
+        setHeaders(csvHeaders);
+
+        if (autoMap) {
+          // Auto-map fields based on common patterns
+          const autoMapping: Partial<FieldMapping> = {};
+          csvHeaders.forEach((header: string) => {
+            const lowerHeader = header.toLowerCase();
+            if (
+              lowerHeader.includes('name') ||
+              lowerHeader.includes('service')
+            ) {
+              autoMapping.name = header;
+            } else if (
+              lowerHeader.includes('price') ||
+              lowerHeader.includes('cost') ||
+              lowerHeader.includes('amount')
+            ) {
+              autoMapping.price = header;
+            } else if (
+              lowerHeader.includes('category') ||
+              lowerHeader.includes('type')
+            ) {
+              autoMapping.category = header;
+            } else if (
+              lowerHeader.includes('cycle') ||
+              lowerHeader.includes('billing')
+            ) {
+              autoMapping.billingCycle = header;
+            } else if (
+              lowerHeader.includes('date') ||
+              lowerHeader.includes('next')
+            ) {
+              autoMapping.nextBillingDate = header;
+            } else if (
+              lowerHeader.includes('description') ||
+              lowerHeader.includes('notes')
+            ) {
+              autoMapping.description = header;
+            }
+          });
+          setFieldMapping(prev => ({ ...prev, ...autoMapping }));
+        }
+
+        toast.success(`CSV file loaded with ${data.length} rows`);
+      } catch (error) {
+        toast.error('Failed to parse CSV file');
+        console.error('CSV parsing error:', error);
       }
-      
-      toast.success(`CSV file loaded with ${data.length} rows`)
-    } catch (error) {
-      toast.error('Failed to parse CSV file')
-      console.error('CSV parsing error:', error)
-    }
-  }, [autoMap])
+    },
+    [autoMap]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
       'text/csv': ['.csv'],
-      'application/vnd.ms-excel': ['.csv']
+      'application/vnd.ms-excel': ['.csv'],
     },
-    multiple: false
-  })
+    multiple: false,
+  });
 
   const validateData = () => {
-    const errors: ValidationError[] = []
-    
+    const errors: ValidationError[] = [];
+
     csvData.forEach((row, index) => {
       // Check required fields
       REQUIRED_FIELDS.forEach(field => {
-        const mappedField = fieldMapping[field as keyof FieldMapping]
+        const mappedField = fieldMapping[field as keyof FieldMapping];
         if (!mappedField || !row[mappedField]?.trim()) {
           errors.push({
             row: index + 1,
             field,
-            message: `${field} is required`
-          })
+            message: `${field} is required`,
+          });
         }
-      })
-      
+      });
+
       // Validate price format
       if (fieldMapping.price && row[fieldMapping.price]) {
-        const price = parseFloat(row[fieldMapping.price])
+        const price = parseFloat(row[fieldMapping.price]);
         if (isNaN(price) || price < 0) {
           errors.push({
             row: index + 1,
             field: 'price',
-            message: 'Price must be a valid positive number'
-          })
+            message: 'Price must be a valid positive number',
+          });
         }
       }
-      
+
       // Validate date format
       if (fieldMapping.nextBillingDate && row[fieldMapping.nextBillingDate]) {
-        const date = new Date(row[fieldMapping.nextBillingDate])
+        const date = new Date(row[fieldMapping.nextBillingDate]);
         if (isNaN(date.getTime())) {
           errors.push({
             row: index + 1,
             field: 'nextBillingDate',
-            message: 'Invalid date format'
-          })
+            message: 'Invalid date format',
+          });
         }
       }
-    })
-    
-    setValidationErrors(errors)
-    return errors.length === 0
-  }
+    });
+
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
 
   const handleImport = async () => {
     if (!validateData()) {
-      toast.error(`Found ${validationErrors.length} validation errors`)
-      return
+      toast.error(`Found ${validationErrors.length} validation errors`);
+      return;
     }
 
-    setIsImporting(true)
+    setIsImporting(true);
     try {
       // Simulate import process
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      const importedCount = csvData.length
-      toast.success(`Successfully imported ${importedCount} subscriptions`)
-      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const importedCount = csvData.length;
+      toast.success(`Successfully imported ${importedCount} subscriptions`);
+
       // Reset form
-      setCsvData([])
-      setHeaders([])
+      setCsvData([]);
+      setHeaders([]);
       setFieldMapping({
         name: '',
         price: '',
         category: '',
         billingCycle: '',
         nextBillingDate: '',
-        description: ''
-      })
-      setValidationErrors([])
+        description: '',
+      });
+      setValidationErrors([]);
     } catch (error) {
-      toast.error('Failed to import subscriptions')
+      toast.error('Failed to import subscriptions');
     } finally {
-      setIsImporting(false)
+      setIsImporting(false);
     }
-  }
+  };
 
   const getFieldMappingValue = (field: keyof FieldMapping) => {
-    return fieldMapping[field] || ''
-  }
+    return fieldMapping[field] || '';
+  };
 
   const setFieldMappingValue = (field: keyof FieldMapping, value: string) => {
-    setFieldMapping(prev => ({ ...prev, [field]: value }))
-  }
+    setFieldMapping(prev => ({ ...prev, [field]: value }));
+  };
 
   return (
     <div className="space-y-6">
@@ -202,15 +253,16 @@ export function EnhancedCSVImport() {
             Upload CSV File
           </CardTitle>
           <CardDescription>
-            Import your subscriptions from a CSV file. We'll help you map the columns correctly.
+            Import your subscriptions from a CSV file. We'll help you map the
+            columns correctly.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div
             {...getRootProps()}
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-              isDragActive 
-                ? 'border-primary bg-primary/5' 
+              isDragActive
+                ? 'border-primary bg-primary/5'
                 : 'border-gray-300 hover:border-primary/50'
             }`}
           >
@@ -220,12 +272,14 @@ export function EnhancedCSVImport() {
               <p className="text-lg font-medium">Drop the CSV file here...</p>
             ) : (
               <div>
-                <p className="text-lg font-medium mb-2">Drag & drop a CSV file here</p>
+                <p className="text-lg font-medium mb-2">
+                  Drag & drop a CSV file here
+                </p>
                 <p className="text-sm text-gray-500">or click to browse</p>
               </div>
             )}
           </div>
-          
+
           {csvData.length > 0 && (
             <div className="mt-4 flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
@@ -255,20 +309,27 @@ export function EnhancedCSVImport() {
               />
               <Label htmlFor="auto-map">Auto-detect field mappings</Label>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {FIELD_OPTIONS.map((field) => (
+              {FIELD_OPTIONS.map(field => (
                 <div key={field.value} className="space-y-2">
                   <Label htmlFor={field.value}>{field.label}</Label>
                   <Select
-                    value={getFieldMappingValue(field.value as keyof FieldMapping)}
-                    onValueChange={(value) => setFieldMappingValue(field.value as keyof FieldMapping, value)}
+                    value={getFieldMappingValue(
+                      field.value as keyof FieldMapping
+                    )}
+                    onValueChange={value =>
+                      setFieldMappingValue(
+                        field.value as keyof FieldMapping,
+                        value
+                      )
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      {headers.map((header) => (
+                      {headers.map(header => (
                         <SelectItem key={header} value={header}>
                           {header}
                         </SelectItem>
@@ -276,7 +337,9 @@ export function EnhancedCSVImport() {
                     </SelectContent>
                   </Select>
                   {REQUIRED_FIELDS.includes(field.value) && (
-                    <Badge variant="secondary" className="text-xs">Required</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      Required
+                    </Badge>
                   )}
                 </div>
               ))}
@@ -297,9 +360,14 @@ export function EnhancedCSVImport() {
           <CardContent>
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {validationErrors.map((error, index) => (
-                <div key={index} className="flex items-center gap-2 text-sm text-red-600">
+                <div
+                  key={index}
+                  className="flex items-center gap-2 text-sm text-red-600"
+                >
                   <X className="h-4 w-4" />
-                  <span>Row {error.row}: {error.field} - {error.message}</span>
+                  <span>
+                    Row {error.row}: {error.field} - {error.message}
+                  </span>
                 </div>
               ))}
             </div>
@@ -321,7 +389,11 @@ export function EnhancedCSVImport() {
                 size="sm"
                 onClick={() => setShowPreview(!showPreview)}
               >
-                {showPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPreview ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
                 {showPreview ? 'Hide' : 'Show'} Preview
               </Button>
             </CardTitle>
@@ -332,7 +404,7 @@ export function EnhancedCSVImport() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      {headers.map((header) => (
+                      {headers.map(header => (
                         <TableHead key={header}>{header}</TableHead>
                       ))}
                     </TableRow>
@@ -340,8 +412,10 @@ export function EnhancedCSVImport() {
                   <TableBody>
                     {csvData.slice(0, 5).map((row, index) => (
                       <TableRow key={index}>
-                        {headers.map((header) => (
-                          <TableCell key={header}>{row[header] || '-'}</TableCell>
+                        {headers.map(header => (
+                          <TableCell key={header}>
+                            {row[header] || '-'}
+                          </TableCell>
                         ))}
                       </TableRow>
                     ))}
@@ -381,5 +455,5 @@ export function EnhancedCSVImport() {
         </div>
       )}
     </div>
-  )
-} 
+  );
+}

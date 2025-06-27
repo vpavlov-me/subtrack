@@ -1,397 +1,397 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
 // ARIA live region component
 export function AriaLive({
   children,
-  ariaLive = "polite",
-  className
+  ariaLive = 'polite',
+  className,
 }: {
-  children: React.ReactNode
-  ariaLive?: "polite" | "assertive" | "off"
-  className?: string
+  children: React.ReactNode;
+  ariaLive?: 'polite' | 'assertive' | 'off';
+  className?: string;
 }) {
   return (
     <div
-      className={cn("sr-only", className)}
+      className={cn('sr-only', className)}
       aria-live={ariaLive}
       aria-atomic="true"
     >
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA describedby component
 export function AriaDescribedBy({
   children,
   describedBy,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  describedBy: string
-  className?: string
+  children: React.ReactNode;
+  describedBy: string;
+  className?: string;
 }) {
   return (
     <div className={className} aria-describedby={describedBy}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA labelledby component
 export function AriaLabelledBy({
   children,
   labelledBy,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  labelledBy: string
-  className?: string
+  children: React.ReactNode;
+  labelledBy: string;
+  className?: string;
 }) {
   return (
     <div className={className} aria-labelledby={labelledBy}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA controls component
 export function AriaControls({
   children,
   controls,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  controls: string
-  className?: string
+  children: React.ReactNode;
+  controls: string;
+  className?: string;
 }) {
   return (
     <div className={className} aria-controls={controls}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA expanded component
 export function AriaExpanded({
   children,
   expanded,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  expanded: boolean
-  className?: string
+  children: React.ReactNode;
+  expanded: boolean;
+  className?: string;
 }) {
   return (
     <div className={className} aria-expanded={expanded}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA pressed component
 export function AriaPressed({
   children,
   pressed,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  pressed: boolean
-  className?: string
+  children: React.ReactNode;
+  pressed: boolean;
+  className?: string;
 }) {
   return (
     <div className={className} aria-pressed={pressed}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA selected component
 export function AriaSelected({
   children,
   selected,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  selected: boolean
-  className?: string
+  children: React.ReactNode;
+  selected: boolean;
+  className?: string;
 }) {
   return (
     <div className={className} aria-selected={selected}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA current component
 export function AriaCurrent({
   children,
   current,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  current?: boolean | "page" | "step" | "location" | "date" | "time"
-  className?: string
+  children: React.ReactNode;
+  current?: boolean | 'page' | 'step' | 'location' | 'date' | 'time';
+  className?: string;
 }) {
   return (
     <div className={className} aria-current={current}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA invalid component
 export function AriaInvalid({
   children,
   invalid,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  invalid: boolean
-  className?: string
+  children: React.ReactNode;
+  invalid: boolean;
+  className?: string;
 }) {
   return (
     <div className={className} aria-invalid={invalid}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA required component
 export function AriaRequired({
   children,
   required,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  required: boolean
-  className?: string
+  children: React.ReactNode;
+  required: boolean;
+  className?: string;
 }) {
   return (
     <div className={className} aria-required={required}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA disabled component
 export function AriaDisabled({
   children,
   disabled,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  disabled: boolean
-  className?: string
+  children: React.ReactNode;
+  disabled: boolean;
+  className?: string;
 }) {
   return (
     <div className={className} aria-disabled={disabled}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA hidden component
 export function AriaHidden({
   children,
   hidden,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  hidden: boolean
-  className?: string
+  children: React.ReactNode;
+  hidden: boolean;
+  className?: string;
 }) {
   return (
     <div className={className} aria-hidden={hidden}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA busy component
 export function AriaBusy({
   children,
   busy,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  busy: boolean
-  className?: string
+  children: React.ReactNode;
+  busy: boolean;
+  className?: string;
 }) {
   return (
     <div className={className} aria-busy={busy}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA label component
 export function AriaLabel({
   children,
   label,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  label: string
-  className?: string
+  children: React.ReactNode;
+  label: string;
+  className?: string;
 }) {
   return (
     <div className={className} aria-label={label}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA description component
 export function AriaDescription({
   children,
   description,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  description: string
-  className?: string
+  children: React.ReactNode;
+  description: string;
+  className?: string;
 }) {
   return (
     <div className={className} aria-description={description}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA role component
 export function AriaRole({
   children,
   role,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  role: string
-  className?: string
+  children: React.ReactNode;
+  role: string;
+  className?: string;
 }) {
   return (
     <div className={className} role={role}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA tabindex component
 export function AriaTabIndex({
   children,
   tabIndex,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  tabIndex: number
-  className?: string
+  children: React.ReactNode;
+  tabIndex: number;
+  className?: string;
 }) {
   return (
     <div className={className} tabIndex={tabIndex}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA orientation component
 export function AriaOrientation({
   children,
   orientation,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  orientation: "horizontal" | "vertical"
-  className?: string
+  children: React.ReactNode;
+  orientation: 'horizontal' | 'vertical';
+  className?: string;
 }) {
   return (
     <div className={className} aria-orientation={orientation}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA sort component
 export function AriaSort({
   children,
   sort,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  sort?: "none" | "ascending" | "descending" | "other"
-  className?: string
+  children: React.ReactNode;
+  sort?: 'none' | 'ascending' | 'descending' | 'other';
+  className?: string;
 }) {
   return (
     <div className={className} aria-sort={sort}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA valuemin component
 export function AriaValueMin({
   children,
   valueMin,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  valueMin: number
-  className?: string
+  children: React.ReactNode;
+  valueMin: number;
+  className?: string;
 }) {
   return (
     <div className={className} aria-valuemin={valueMin}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA valuemax component
 export function AriaValueMax({
   children,
   valueMax,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  valueMax: number
-  className?: string
+  children: React.ReactNode;
+  valueMax: number;
+  className?: string;
 }) {
   return (
     <div className={className} aria-valuemax={valueMax}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA valuenow component
 export function AriaValueNow({
   children,
   valueNow,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  valueNow: number
-  className?: string
+  children: React.ReactNode;
+  valueNow: number;
+  className?: string;
 }) {
   return (
     <div className={className} aria-valuenow={valueNow}>
       {children}
     </div>
-  )
+  );
 }
 
 // ARIA valuetext component
 export function AriaValueText({
   children,
   valueText,
-  className
+  className,
 }: {
-  children: React.ReactNode
-  valueText: string
-  className?: string
+  children: React.ReactNode;
+  valueText: string;
+  className?: string;
 }) {
   return (
     <div className={className} aria-valuetext={valueText}>
       {children}
     </div>
-  )
-} 
+  );
+}

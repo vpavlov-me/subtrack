@@ -1,13 +1,13 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
 interface VirtualListProps<T> {
-  items: T[]
-  height: number
-  itemHeight: number
-  renderItem: (item: T, index: number) => React.ReactNode
-  className?: string
-  overscan?: number
+  items: T[];
+  height: number;
+  itemHeight: number;
+  renderItem: (item: T, index: number) => React.ReactNode;
+  className?: string;
+  overscan?: number;
 }
 
 export function VirtualList<T>({
@@ -16,64 +16,61 @@ export function VirtualList<T>({
   itemHeight,
   renderItem,
   className,
-  overscan = 5
+  overscan = 5,
 }: VirtualListProps<T>) {
-  const [scrollTop, setScrollTop] = React.useState(0)
-  const containerRef = React.useRef<HTMLDivElement>(null)
+  const [scrollTop, setScrollTop] = React.useState(0);
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
-  const totalHeight = items.length * itemHeight
-  const visibleCount = Math.ceil(height / itemHeight)
-  const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan)
+  const totalHeight = items.length * itemHeight;
+  const visibleCount = Math.ceil(height / itemHeight);
+  const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
   const endIndex = Math.min(
     items.length - 1,
     Math.ceil(scrollTop / itemHeight) + visibleCount + overscan
-  )
+  );
 
-  const visibleItems = items.slice(startIndex, endIndex + 1)
-  const offsetY = startIndex * itemHeight
+  const visibleItems = items.slice(startIndex, endIndex + 1);
+  const offsetY = startIndex * itemHeight;
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    setScrollTop(event.currentTarget.scrollTop)
-  }
+    setScrollTop(event.currentTarget.scrollTop);
+  };
 
   return (
     <div
       ref={containerRef}
-      className={cn("overflow-auto", className)}
+      className={cn('overflow-auto', className)}
       style={{ height }}
       onScroll={handleScroll}
     >
-      <div style={{ height: totalHeight, position: "relative" }}>
+      <div style={{ height: totalHeight, position: 'relative' }}>
         <div
           style={{
-            position: "absolute",
+            position: 'absolute',
             top: offsetY,
             left: 0,
-            right: 0
+            right: 0,
           }}
         >
           {visibleItems.map((item, index) => (
-            <div
-              key={startIndex + index}
-              style={{ height: itemHeight }}
-            >
+            <div key={startIndex + index} style={{ height: itemHeight }}>
               {renderItem(item, startIndex + index)}
             </div>
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 interface InfiniteScrollProps<T> {
-  items: T[]
-  hasMore: boolean
-  isLoading: boolean
-  onLoadMore: () => void
-  renderItem: (item: T, index: number) => React.ReactNode
-  className?: string
-  threshold?: number
+  items: T[];
+  hasMore: boolean;
+  isLoading: boolean;
+  onLoadMore: () => void;
+  renderItem: (item: T, index: number) => React.ReactNode;
+  className?: string;
+  threshold?: number;
 }
 
 export function InfiniteScroll<T>({
@@ -83,26 +80,26 @@ export function InfiniteScroll<T>({
   onLoadMore,
   renderItem,
   className,
-  threshold = 100
+  threshold = 100,
 }: InfiniteScrollProps<T>) {
-  const observerRef = React.useRef<HTMLDivElement>(null)
+  const observerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         if (entries[0].isIntersecting && hasMore && !isLoading) {
-          onLoadMore()
+          onLoadMore();
         }
       },
       { rootMargin: `${threshold}px` }
-    )
+    );
 
     if (observerRef.current) {
-      observer.observe(observerRef.current)
+      observer.observe(observerRef.current);
     }
 
-    return () => observer.disconnect()
-  }, [hasMore, isLoading, onLoadMore, threshold])
+    return () => observer.disconnect();
+  }, [hasMore, isLoading, onLoadMore, threshold]);
 
   return (
     <div className={className}>
@@ -112,7 +109,9 @@ export function InfiniteScroll<T>({
           {isLoading ? (
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
-              <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
+              <span className="ml-2 text-sm text-muted-foreground">
+                Loading...
+              </span>
             </div>
           ) : (
             <div className="h-4" />
@@ -120,16 +119,16 @@ export function InfiniteScroll<T>({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 interface LazyImageProps {
-  src: string
-  alt: string
-  className?: string
-  placeholder?: string
-  onLoad?: () => void
-  onError?: () => void
+  src: string;
+  alt: string;
+  className?: string;
+  placeholder?: string;
+  onLoad?: () => void;
+  onError?: () => void;
 }
 
 export function LazyImage({
@@ -138,31 +137,31 @@ export function LazyImage({
   className,
   placeholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E",
   onLoad,
-  onError
+  onError,
 }: LazyImageProps) {
-  const [isLoaded, setIsLoaded] = React.useState(false)
-  const [hasError, setHasError] = React.useState(false)
-  const imgRef = React.useRef<HTMLImageElement>(null)
+  const [isLoaded, setIsLoaded] = React.useState(false);
+  const [hasError, setHasError] = React.useState(false);
+  const imgRef = React.useRef<HTMLImageElement>(null);
 
   React.useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting && imgRef.current) {
-            imgRef.current.src = src
-            observer.unobserve(entry.target)
+            imgRef.current.src = src;
+            observer.unobserve(entry.target);
           }
-        })
+        });
       },
-      { rootMargin: "50px" }
-    )
+      { rootMargin: '50px' }
+    );
 
     if (imgRef.current) {
-      observer.observe(imgRef.current)
+      observer.observe(imgRef.current);
     }
 
-    return () => observer.disconnect()
-  }, [src])
+    return () => observer.disconnect();
+  }, [src]);
 
   return (
     <img
@@ -170,18 +169,18 @@ export function LazyImage({
       src={placeholder}
       alt={alt}
       className={cn(
-        "transition-opacity duration-300",
-        isLoaded ? "opacity-100" : "opacity-0",
+        'transition-opacity duration-300',
+        isLoaded ? 'opacity-100' : 'opacity-0',
         className
       )}
       onLoad={() => {
-        setIsLoaded(true)
-        onLoad?.()
+        setIsLoaded(true);
+        onLoad?.();
       }}
       onError={() => {
-        setHasError(true)
-        onError?.()
+        setHasError(true);
+        onError?.();
       }}
     />
-  )
-} 
+  );
+}

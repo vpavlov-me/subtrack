@@ -1,44 +1,53 @@
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { DateRangePicker, DateRange } from '@/features/analytics/components/DateRangePicker'
-import { ReportExporter } from '@/features/analytics/components/ReportExporter'
-import { TrendAnalysis } from '@/features/analytics/components/TrendAnalysis'
-import { DashboardCategoryChart } from '@/components/DashboardCategoryChart'
-import KPICards from '@/components/KPICards'
-import SpendLineChart from '@/components/SpendLineChart'
-import { supabase } from '@/lib/supabase'
-import { useUser } from '@/hooks/useUser'
-import { subDays, format } from 'date-fns'
-import Skeleton from '@/components/ui/skeleton'
+import { useState, useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  DateRangePicker,
+  DateRange,
+} from '@/features/analytics/components/DateRangePicker';
+import { ReportExporter } from '@/features/analytics/components/ReportExporter';
+import { TrendAnalysis } from '@/features/analytics/components/TrendAnalysis';
+import { DashboardCategoryChart } from '@/components/DashboardCategoryChart';
+import KPICards from '@/components/KPICards';
+import SpendLineChart from '@/components/SpendLineChart';
+import { supabase } from '@/lib/supabase';
+import { useUser } from '@/hooks/useUser';
+import { subDays, format } from 'date-fns';
+import Skeleton from '@/components/ui/skeleton';
 
 interface Subscription {
-  id: string
-  name: string
-  price: number
-  category: string
-  next_billing_date: string
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  next_billing_date: string;
 }
 
 interface CategoryData {
-  category: string
-  total: number
-  count: number
+  category: string;
+  total: number;
+  count: number;
 }
 
 interface TrendData {
-  date: string
-  amount: number
-  count: number
+  date: string;
+  amount: number;
+  count: number;
 }
 
 export default function Analytics() {
-  const user = useUser() as any
+  const user = useUser() as any;
   const [dateRange, setDateRange] = useState<DateRange>({
     from: subDays(new Date(), 30),
-    to: new Date()
-  })
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+    to: new Date(),
+  });
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [analyticsData, setAnalyticsData] = useState({
     categoryData: [] as CategoryData[],
     trendData: [] as TrendData[],
@@ -46,19 +55,19 @@ export default function Analytics() {
       totalSpending: 0,
       activeSubscriptions: 0,
       averageMonthlyCost: 0,
-      savingsOpportunity: 0
-    }
-  })
-  const [loading, setLoading] = useState(true)
+      savingsOpportunity: 0,
+    },
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
-      fetchAnalyticsData()
+      fetchAnalyticsData();
     }
-  }, [user, dateRange])
+  }, [user, dateRange]);
 
   const fetchAnalyticsData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       // Fetch subscriptions for the date range
       const { data: subs } = await supabase
@@ -66,30 +75,30 @@ export default function Analytics() {
         .select('*')
         .eq('user_id', (user as any).id)
         .gte('next_billing_date', format(dateRange.from, 'yyyy-MM-dd'))
-        .lte('next_billing_date', format(dateRange.to, 'yyyy-MM-dd'))
+        .lte('next_billing_date', format(dateRange.to, 'yyyy-MM-dd'));
 
       if (subs) {
-        setSubscriptions(subs as Subscription[])
-        
+        setSubscriptions(subs as Subscription[]);
+
         // Calculate analytics data
-        const totalSpending = subs.reduce((sum, sub) => sum + sub.price, 0)
-        const activeSubscriptions = subs.length
-        const averageMonthlyCost = totalSpending / activeSubscriptions || 0
-        
+        const totalSpending = subs.reduce((sum, sub) => sum + sub.price, 0);
+        const activeSubscriptions = subs.length;
+        const averageMonthlyCost = totalSpending / activeSubscriptions || 0;
+
         // Mock trend data - in real app this would come from database
         const trendData: TrendData[] = Array.from({ length: 30 }, (_, i) => ({
           date: format(subDays(new Date(), 29 - i), 'yyyy-MM-dd'),
           amount: Math.random() * 100 + 50,
-          count: Math.floor(Math.random() * 5) + 1
-        }))
+          count: Math.floor(Math.random() * 5) + 1,
+        }));
 
         // Mock category data
         const categoryData: CategoryData[] = [
           { category: 'Entertainment', total: 45.99, count: 3 },
           { category: 'Productivity', total: 29.99, count: 2 },
           { category: 'Health', total: 19.99, count: 1 },
-          { category: 'Education', total: 15.99, count: 1 }
-        ]
+          { category: 'Education', total: 15.99, count: 1 },
+        ];
 
         setAnalyticsData({
           categoryData,
@@ -98,16 +107,16 @@ export default function Analytics() {
             totalSpending,
             activeSubscriptions,
             averageMonthlyCost,
-            savingsOpportunity: totalSpending * 0.15 // 15% potential savings
-          }
-        })
+            savingsOpportunity: totalSpending * 0.15, // 15% potential savings
+          },
+        });
       }
     } catch (error) {
-      console.error('Error fetching analytics data:', error)
+      console.error('Error fetching analytics data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -132,7 +141,7 @@ export default function Analytics() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -165,9 +174,7 @@ export default function Analytics() {
             <Card>
               <CardHeader>
                 <CardTitle>Spending Over Time</CardTitle>
-                <CardDescription>
-                  Monthly spending patterns
-                </CardDescription>
+                <CardDescription>Monthly spending patterns</CardDescription>
               </CardHeader>
               <CardContent>
                 <SpendLineChart />
@@ -189,10 +196,7 @@ export default function Analytics() {
         </TabsContent>
 
         <TabsContent value="trends" className="space-y-4">
-          <TrendAnalysis 
-            dateRange={dateRange}
-            data={analyticsData.trendData}
-          />
+          <TrendAnalysis dateRange={dateRange} data={analyticsData.trendData} />
         </TabsContent>
 
         <TabsContent value="categories" className="space-y-4">
@@ -212,13 +216,14 @@ export default function Analytics() {
             <Card>
               <CardHeader>
                 <CardTitle>Category Insights</CardTitle>
-                <CardDescription>
-                  Recommendations and insights
-                </CardDescription>
+                <CardDescription>Recommendations and insights</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {analyticsData.categoryData.map((category) => (
-                  <div key={category.category} className="flex items-center justify-between p-3 border rounded-lg">
+                {analyticsData.categoryData.map(category => (
+                  <div
+                    key={category.category}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
                     <div>
                       <div className="font-medium">{category.category}</div>
                       <div className="text-sm text-muted-foreground">
@@ -226,9 +231,16 @@ export default function Analytics() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-medium">${category.total.toFixed(2)}</div>
+                      <div className="font-medium">
+                        ${category.total.toFixed(2)}
+                      </div>
                       <div className="text-sm text-muted-foreground">
-                        {((category.total / analyticsData.kpiData.totalSpending) * 100).toFixed(1)}%
+                        {(
+                          (category.total /
+                            analyticsData.kpiData.totalSpending) *
+                          100
+                        ).toFixed(1)}
+                        %
                       </div>
                     </div>
                   </div>
@@ -252,22 +264,32 @@ export default function Analytics() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <span className="text-muted-foreground">Date Range:</span>
+                        <span className="text-muted-foreground">
+                          Date Range:
+                        </span>
                         <div className="font-medium">
-                          {format(dateRange.from, 'MMM dd, yyyy')} - {format(dateRange.to, 'MMM dd, yyyy')}
+                          {format(dateRange.from, 'MMM dd, yyyy')} -{' '}
+                          {format(dateRange.to, 'MMM dd, yyyy')}
                         </div>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Total Records:</span>
-                        <div className="font-medium">{subscriptions.length}</div>
+                        <span className="text-muted-foreground">
+                          Total Records:
+                        </span>
+                        <div className="font-medium">
+                          {subscriptions.length}
+                        </div>
                       </div>
                     </div>
-                    
+
                     <div className="border rounded-lg p-4">
                       <h4 className="font-medium mb-2">Sample Data</h4>
                       <div className="text-sm text-muted-foreground">
-                        {subscriptions.slice(0, 3).map((sub) => (
-                          <div key={sub.id} className="flex justify-between py-1">
+                        {subscriptions.slice(0, 3).map(sub => (
+                          <div
+                            key={sub.id}
+                            className="flex justify-between py-1"
+                          >
                             <span>{sub.name}</span>
                             <span>${sub.price}</span>
                           </div>
@@ -284,13 +306,10 @@ export default function Analytics() {
               </Card>
             </div>
 
-            <ReportExporter 
-              dateRange={dateRange}
-              data={subscriptions}
-            />
+            <ReportExporter dateRange={dateRange} data={subscriptions} />
           </div>
         </TabsContent>
       </Tabs>
     </div>
-  )
-} 
+  );
+}

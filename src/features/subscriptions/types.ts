@@ -20,6 +20,9 @@ export type SortOrder = 'asc' | 'desc';
 export type BillingCycleFilter = 'all' | BillingCycle;
 
 // Типы для API
-export type SubscriptionInput = Omit<Subscription, 'id' | 'createdAt' | 'updatedAt'>;
+export type SubscriptionInput = Omit<
+  Subscription,
+  'id' | 'createdAt' | 'updatedAt'
+>;
 export type SubscriptionCreate = SubscriptionInput;
-export type SubscriptionUpdate = SubscriptionInput; 
+export type SubscriptionUpdate = SubscriptionInput;

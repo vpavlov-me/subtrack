@@ -1,50 +1,56 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { MessageSquare, Send } from 'lucide-react'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { MessageSquare, Send } from 'lucide-react';
 
 // Extend Window interface for PostHog
 declare global {
   interface Window {
     posthog?: {
-      capture: (event: string, properties?: Record<string, any>) => void
-    }
+      capture: (event: string, properties?: Record<string, any>) => void;
+    };
   }
 }
 
 export function FeedbackWidget() {
-  const [open, setOpen] = useState(false)
-  const [feedback, setFeedback] = useState('')
-  const [submitting, setSubmitting] = useState(false)
+  const [open, setOpen] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!feedback.trim()) return
+    if (!feedback.trim()) return;
 
-    setSubmitting(true)
+    setSubmitting(true);
     try {
       // Send feedback to PostHog
       if (window.posthog) {
         window.posthog.capture('feedback_submitted', {
           feedback: feedback.trim(),
           timestamp: new Date().toISOString(),
-        })
+        });
       }
 
       // Clear form and close modal
-      setFeedback('')
-      setOpen(false)
-      
+      setFeedback('');
+      setOpen(false);
+
       // Show success message
       // You could use a toast here
-      console.log('Feedback submitted successfully')
+      console.log('Feedback submitted successfully');
     } catch (error) {
-      console.error('Failed to submit feedback:', error)
+      console.error('Failed to submit feedback:', error);
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   return (
     <>
@@ -67,7 +73,8 @@ export function FeedbackWidget() {
               Send Feedback
             </DialogTitle>
             <DialogDescription>
-              Help us improve SubTrack by sharing your thoughts, suggestions, or reporting issues.
+              Help us improve SubTrack by sharing your thoughts, suggestions, or
+              reporting issues.
             </DialogDescription>
           </DialogHeader>
 
@@ -78,15 +85,15 @@ export function FeedbackWidget() {
                 id="feedback"
                 placeholder="Tell us what you think about SubTrack..."
                 value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
+                onChange={e => setFeedback(e.target.value)}
                 rows={4}
                 className="resize-none"
               />
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button 
-                onClick={handleSubmit} 
+              <Button
+                onClick={handleSubmit}
                 disabled={!feedback.trim() || submitting}
                 className="flex-1"
               >
@@ -101,5 +108,5 @@ export function FeedbackWidget() {
         </DialogContent>
       </Dialog>
     </>
-  )
-} 
+  );
+}

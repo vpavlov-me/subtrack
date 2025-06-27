@@ -1,13 +1,20 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './card'
+import type { Meta, StoryObj } from '@storybook/react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './card';
 
 const meta: Meta<typeof Card> = {
   title: 'UI/Card',
   component: Card,
   tags: ['autodocs'],
-}
+};
 
-export default meta
+export default meta;
 
 export const Default: StoryObj<typeof Card> = {
   render: () => (
@@ -24,7 +31,7 @@ export const Default: StoryObj<typeof Card> = {
       </CardFooter>
     </Card>
   ),
-}
+};
 
 export const WithContent: StoryObj<typeof Card> = {
   render: () => (
@@ -35,11 +42,13 @@ export const WithContent: StoryObj<typeof Card> = {
       </CardHeader>
       <CardContent>
         <p className="text-2xl font-bold">$15.99</p>
-        <p className="text-sm text-muted-foreground">Next billing: Feb 1, 2024</p>
+        <p className="text-sm text-muted-foreground">
+          Next billing: Feb 1, 2024
+        </p>
       </CardContent>
     </Card>
   ),
-}
+};
 
 export const Compact: StoryObj<typeof Card> = {
   render: () => (
@@ -59,4 +68,4 @@ export const Compact: StoryObj<typeof Card> = {
       </CardContent>
     </Card>
   ),
-} 
+};

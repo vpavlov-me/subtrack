@@ -5,6 +5,7 @@ A modern, production-ready subscription tracking application built with React 19
 ## ✨ Features
 
 ### Core Functionality
+
 - 📊 **Dashboard Analytics** - KPI cards, spending charts, category breakdowns
 - 💳 **Subscription Management** - CRUD operations with bulk CSV import/export
 - 🎯 **Smart Onboarding** - Guided setup with CSV import wizard
@@ -14,6 +15,7 @@ A modern, production-ready subscription tracking application built with React 19
 - 📱 **Responsive Design** - Mobile-first with PWA support
 
 ### Advanced Features
+
 - 📈 **Category Analytics** - Materialized views with Recharts visualizations
 - 🛡️ **Seat Management** - RLS-enforced team limits with upgrade prompts
 - 🔄 **CSV Import/Export** - Robust parsing with validation and error handling
@@ -35,11 +37,13 @@ A modern, production-ready subscription tracking application built with React 19
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js ≥ 20
 - npm ≥ 8
 - Supabase CLI ≥ 1.176.7
 
 ### 1. Clone & Install
+
 ```bash
 git clone https://github.com/your-username/subtrack.git
 cd subtrack
@@ -47,7 +51,9 @@ npm install
 ```
 
 ### 2. Environment Setup
+
 Create `.env.local`:
+
 ```env
 # Supabase
 VITE_SUPABASE_URL=https://your-project.supabase.co
@@ -66,6 +72,7 @@ VITE_POSTHOG_HOST=https://app.posthog.com
 ```
 
 ### 3. Database Setup
+
 ```bash
 # Start local Supabase
 supabase start
@@ -81,6 +88,7 @@ npm run seed
 ```
 
 ### 4. Development
+
 ```bash
 npm run dev          # Start development server
 npm run test         # Run unit tests
@@ -91,6 +99,7 @@ npm run storybook    # Start Storybook
 ## 📊 Demo Data
 
 After running `npm run seed`, use these credentials:
+
 - **Email**: `demo@subtrack.dev`
 - **Password**: `demo123`
 
@@ -113,6 +122,7 @@ Backend (Supabase)
 ## 🧪 Testing
 
 ### Unit Tests
+
 ```bash
 npm test              # Run all tests
 npm run test:watch    # Watch mode
@@ -120,12 +130,14 @@ npm run test:coverage # Coverage report
 ```
 
 ### E2E Tests
+
 ```bash
 npm run e2e           # Run Playwright tests
 npm run e2e:ui        # Playwright UI mode
 ```
 
 ### Component Testing
+
 ```bash
 npm run storybook     # Storybook development
 npm run storybook:build # Build for Chromatic
@@ -138,6 +150,7 @@ npm run storybook:build # Build for Chromatic
 SubTrack is optimized for Vercel deployment with zero-downtime static hosting and edge functions.
 
 #### Quick Deploy
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -150,9 +163,11 @@ git push origin main
 ```
 
 #### Step-by-Step Guide
+
 For detailed deployment instructions, see [📖 Vercel Deployment Guide](docs/deploy-vercel.md).
 
 #### Key Features
+
 - **Zero-downtime**: Automatic blue-green deployments
 - **Security Headers**: HSTS, X-Frame-Options, CSP
 - **Edge Functions**: Serverless API routes
@@ -160,6 +175,7 @@ For detailed deployment instructions, see [📖 Vercel Deployment Guide](docs/de
 - **Analytics**: Built-in performance monitoring
 
 #### Environment Setup
+
 ```bash
 # Required variables (set in Vercel dashboard)
 VITE_SUPABASE_URL=your-supabase-url
@@ -173,6 +189,7 @@ VITE_POSTHOG_KEY=your-posthog-key
 ```
 
 #### Free Plan Limits
+
 - **Bandwidth**: 100 GB/month
 - **Function Execution**: 100 GB-hours/month
 - **Build Minutes**: 6,000 minutes/month
@@ -180,12 +197,14 @@ VITE_POSTHOG_KEY=your-posthog-key
 ### Alternative Deployment Options
 
 #### Manual Deployment
+
 ```bash
 npm run build
 vercel --prod
 ```
 
 #### Docker Deployment
+
 ```bash
 # Build Docker image
 docker build -t subtrack .
@@ -197,14 +216,17 @@ docker run -p 3000:3000 subtrack
 ## 📈 Monitoring & Analytics
 
 ### Error Tracking
+
 - **Sentry**: Real-time error monitoring with source maps
 - **Performance**: Core Web Vitals tracking
 
 ### User Analytics
+
 - **PostHog**: Event tracking, funnels, feature flags
 - **Vercel Analytics**: Page views, performance metrics
 
 ### Infrastructure
+
 - **Supabase**: Database monitoring, function logs
 - **Vercel**: Build analytics, function performance
 
@@ -213,6 +235,7 @@ docker run -p 3000:3000 subtrack
 ### Environment Variables
 
 #### Required
+
 ```env
 VITE_SUPABASE_URL=your-supabase-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
@@ -221,6 +244,7 @@ VITE_STRIPE_PUBLISHABLE_KEY=your-stripe-key
 ```
 
 #### Optional (Monitoring)
+
 ```env
 VITE_SENTRY_DSN=your-sentry-dsn
 VITE_POSTHOG_KEY=your-posthog-key
@@ -228,6 +252,7 @@ VITE_POSTHOG_HOST=https://app.posthog.com
 ```
 
 ### Supabase Configuration
+
 - **RLS Policies**: Row-level security for data isolation
 - **Edge Functions**: Reminder system, webhook handlers
 - **Cron Jobs**: Daily reminders, currency updates
@@ -236,17 +261,20 @@ VITE_POSTHOG_HOST=https://app.posthog.com
 ## 📚 API Reference
 
 ### Core Endpoints
+
 - `GET /subscriptions` - User's subscriptions
 - `POST /subscriptions` - Create subscription
 - `PUT /subscriptions/:id` - Update subscription
 - `DELETE /subscriptions/:id` - Delete subscription
 
 ### Team Management
+
 - `GET /teams` - User's teams
 - `POST /teams/:id/members` - Invite team member
 - `DELETE /teams/:id/members/:memberId` - Remove member
 
 ### Analytics
+
 - `GET /analytics/category` - Category spending breakdown
 - `POST /analytics/refresh` - Refresh materialized views
 
@@ -282,6 +310,7 @@ VITE_POSTHOG_HOST=https://app.posthog.com
 5. Open Pull Request
 
 ### Development Guidelines
+
 - Follow TypeScript strict mode
 - Write tests for new features
 - Update Storybook stories
@@ -301,12 +330,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🗺 Roadmap
 
 ### v1.1 (Next Release)
+
 - [ ] Advanced reporting and exports
 - [ ] Integration with bank APIs
 - [ ] Mobile app (React Native)
 - [ ] Advanced team permissions
 
 ### v1.2 (Future)
+
 - [ ] AI-powered spending insights
 - [ ] Subscription optimization recommendations
 - [ ] Multi-language support

@@ -1,5 +1,5 @@
-import PlanSelector from '@/features/billing/PlanSelector'
-import BillingStatusCard from '@/features/billing/BillingStatusCard'
+import PlanSelector from '@/features/billing/PlanSelector';
+import BillingStatusCard from '@/features/billing/BillingStatusCard';
 
 export default function Billing() {
   return (
@@ -7,5 +7,5 @@ export default function Billing() {
       <BillingStatusCard />
       <PlanSelector />
     </div>
-  )
-} 
+  );
+}

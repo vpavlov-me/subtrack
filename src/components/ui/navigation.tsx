@@ -1,70 +1,70 @@
-import * as React from "react"
-import { NavLink } from "react-router-dom"
-import { cn } from "@/lib/utils"
+import * as React from 'react';
+import { NavLink } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 interface NavigationItem {
-  to: string
-  label: string
-  icon?: React.ComponentType<{ className?: string }>
-  badge?: string
-  disabled?: boolean
+  to: string;
+  label: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  badge?: string;
+  disabled?: boolean;
 }
 
 interface NavigationProps {
-  items: NavigationItem[]
-  orientation?: "horizontal" | "vertical"
-  className?: string
+  items: NavigationItem[];
+  orientation?: 'horizontal' | 'vertical';
+  className?: string;
 }
 
-export function Navigation({ 
-  items, 
-  orientation = "horizontal", 
-  className 
+export function Navigation({
+  items,
+  orientation = 'horizontal',
+  className,
 }: NavigationProps) {
-  const [activeIndex, setActiveIndex] = React.useState(0)
+  const [activeIndex, setActiveIndex] = React.useState(0);
 
   const handleKeyDown = (event: React.KeyboardEvent, index: number) => {
     switch (event.key) {
-      case "ArrowRight":
-      case "ArrowDown":
-        event.preventDefault()
+      case 'ArrowRight':
+      case 'ArrowDown':
+        event.preventDefault();
         {
-          const nextIndex = (index + 1) % items.length
-          setActiveIndex(nextIndex)
+          const nextIndex = (index + 1) % items.length;
+          setActiveIndex(nextIndex);
         }
-        break
-      case "ArrowLeft":
-      case "ArrowUp":
-        event.preventDefault()
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        event.preventDefault();
         {
-          const prevIndex = index === 0 ? items.length - 1 : index - 1
-          setActiveIndex(prevIndex)
+          const prevIndex = index === 0 ? items.length - 1 : index - 1;
+          setActiveIndex(prevIndex);
         }
-        break
-      case "Home":
-        event.preventDefault()
-        setActiveIndex(0)
-        break
-      case "End":
-        event.preventDefault()
-        setActiveIndex(items.length - 1)
-        break
+        break;
+      case 'Home':
+        event.preventDefault();
+        setActiveIndex(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        setActiveIndex(items.length - 1);
+        break;
     }
-  }
+  };
 
   return (
     <nav
       className={cn(
-        "flex",
-        orientation === "horizontal" ? "flex-row gap-6" : "flex-col gap-2",
+        'flex',
+        orientation === 'horizontal' ? 'flex-row gap-6' : 'flex-col gap-2',
         className
       )}
       role="navigation"
       aria-label="Primary navigation"
     >
       {items.map((item, index) => {
-        const Icon = item.icon
-        const isActive = index === activeIndex
+        const Icon = item.icon;
+        const isActive = index === activeIndex;
 
         return (
           <NavLink
@@ -72,19 +72,19 @@ export function Navigation({
             to={item.to}
             className={({ isActive: isNavActive }) =>
               cn(
-                "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 focus-visible-ring",
-                "hover:bg-accent hover:text-accent-foreground",
+                'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 focus-visible-ring',
+                'hover:bg-accent hover:text-accent-foreground',
                 isNavActive
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground",
-                item.disabled && "pointer-events-none opacity-50",
-                isActive && "ring-2 ring-ring ring-offset-2"
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-muted-foreground',
+                item.disabled && 'pointer-events-none opacity-50',
+                isActive && 'ring-2 ring-ring ring-offset-2'
               )
             }
             tabIndex={item.disabled ? -1 : 0}
-            aria-current={item.disabled ? undefined : "page"}
+            aria-current={item.disabled ? undefined : 'page'}
             aria-disabled={item.disabled}
-            onKeyDown={(e) => handleKeyDown(e, index)}
+            onKeyDown={e => handleKeyDown(e, index)}
             onFocus={() => setActiveIndex(index)}
           >
             {Icon && <Icon className="h-4 w-4" />}
@@ -95,10 +95,10 @@ export function Navigation({
               </span>
             )}
           </NavLink>
-        )
+        );
       })}
     </nav>
-  )
+  );
 }
 
 export function SkipLink() {
@@ -109,5 +109,5 @@ export function SkipLink() {
     >
       Skip to main content
     </a>
-  )
-} 
+  );
+}

@@ -1,4 +1,10 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 
 export type SortField = 'name' | 'price' | 'nextBillingDate';
@@ -26,7 +32,10 @@ export function SubscriptionFilters({
     <div className="flex flex-wrap gap-4 items-end">
       <div className="space-y-2">
         <Label>Sort by</Label>
-        <Select value={sortField} onValueChange={(value) => onSortFieldChange(value as SortField)}>
+        <Select
+          value={sortField}
+          onValueChange={value => onSortFieldChange(value as SortField)}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
@@ -40,7 +49,10 @@ export function SubscriptionFilters({
 
       <div className="space-y-2">
         <Label>Order</Label>
-        <Select value={sortOrder} onValueChange={(value) => onSortOrderChange(value as SortOrder)}>
+        <Select
+          value={sortOrder}
+          onValueChange={value => onSortOrderChange(value as SortOrder)}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Order" />
           </SelectTrigger>
@@ -53,7 +65,12 @@ export function SubscriptionFilters({
 
       <div className="space-y-2">
         <Label>Billing Cycle</Label>
-        <Select value={billingCycleFilter} onValueChange={(value) => onBillingCycleFilterChange(value as BillingCycleFilter)}>
+        <Select
+          value={billingCycleFilter}
+          onValueChange={value =>
+            onBillingCycleFilterChange(value as BillingCycleFilter)
+          }
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Billing Cycle" />
           </SelectTrigger>
@@ -66,4 +83,4 @@ export function SubscriptionFilters({
       </div>
     </div>
   );
-} 
+}
