@@ -1,0 +1,43 @@
+# Global owners
+* @pavlov
+
+# Frontend components
+/src/components/ @pavlov
+/src/pages/ @pavlov
+/src/hooks/ @pavlov
+/src/lib/ @pavlov
+
+# Features
+/src/features/subscriptions/ @pavlov
+/src/features/billing/ @pavlov
+/src/features/teams/ @pavlov
+/src/features/onboarding/ @pavlov
+/src/features/currency/ @pavlov
+
+# UI components
+/src/components/ui/ @pavlov
+
+# Backend & Database
+/supabase/ @pavlov
+/src/lib/supabase.ts @pavlov
+/src/lib/stripe.ts @pavlov
+
+# Configuration files
+package.json @pavlov
+vite.config.ts @pavlov
+tailwind.config.cjs @pavlov
+tsconfig.json @pavlov
+
+# Documentation
+README.md @pavlov
+*.md @pavlov
+
+# CI/CD
+.github/ @pavlov
+
+# Tests
+e2e/ @pavlov
+*.test.ts @pavlov
+*.spec.ts @pavlov
+vitest.config.ts @pavlov
+playwright.config.ts @pavlov 

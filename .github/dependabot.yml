@@ -1,0 +1,101 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "pavlov"
+    assignees:
+      - "pavlov"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+    ignore:
+      # Ignore major version updates for critical packages
+      - dependency-name: "@types/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "pavlov"
+    assignees:
+      - "pavlov"
+    commit-message:
+      prefix: "ci"
+      prefix-development: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+      - "github-actions"
+
+  # Enable security updates for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "pavlov"
+    assignees:
+      - "pavlov"
+    commit-message:
+      prefix: "security"
+      prefix-development: "security"
+      include: "scope"
+    labels:
+      - "security"
+      - "dependencies"
+      - "automated"
+    # Only security updates
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    ignore:
+      # Don't ignore security updates
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch", "version-update:semver-minor"]
+
+  # Enable security updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "pavlov"
+    assignees:
+      - "pavlov"
+    commit-message:
+      prefix: "security"
+      prefix-development: "security"
+      include: "scope"
+    labels:
+      - "security"
+      - "dependencies"
+      - "automated"
+      - "github-actions" 

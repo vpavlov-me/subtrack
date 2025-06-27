@@ -1,0 +1,113 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci') }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Bump version
+        id: bump
+        run: |
+          # Determine version bump type based on commit messages
+          if git log --oneline -10 | grep -q "BREAKING CHANGE\|feat:"; then
+            BUMP_TYPE="minor"
+          elif git log --oneline -10 | grep -q "fix:"; then
+            BUMP_TYPE="patch"
+          else
+            BUMP_TYPE="patch"
+          fi
+          
+          # Bump version
+          npm version $BUMP_TYPE --no-git-tag-version
+          
+          # Get new version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Generate changelog from conventional commits
+          npx conventional-changelog-cli@latest --preset angular --release-count 0 --outfile CHANGELOG.md
+          
+          # Get changelog content
+          CHANGELOG=$(cat CHANGELOG.md)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Commit version bump
+        run: |
+          git add package.json package-lock.json CHANGELOG.md
+          git commit -m "chore: bump version to ${{ steps.bump.outputs.new_version }}"
+          git tag v${{ steps.bump.outputs.new_version }}
+
+      - name: Push changes
+        run: |
+          git push origin main
+          git push origin --tags
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.bump.outputs.new_version }}
+          release_name: Release v${{ steps.bump.outputs.new_version }}
+          body: |
+            ## What's Changed
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## Installation
+            
+            ```bash
+            npm install subtrack@${{ steps.bump.outputs.new_version }}
+            ```
+            
+            ## Migration Guide
+            
+            See [CHANGELOG.md](CHANGELOG.md) for detailed migration instructions.
+          draft: false
+          prerelease: false
+
+      - name: Notify team
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#releases'
+          text: |
+            🚀 New release v${{ steps.bump.outputs.new_version }} deployed!
+            
+            ${{ steps.changelog.outputs.changelog }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 
