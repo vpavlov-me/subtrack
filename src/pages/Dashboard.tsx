@@ -22,6 +22,8 @@ import MonthlySpendWidget from '@/components/MonthlySpendWidget'
 import SpendLineChart from '@/components/SpendLineChart'
 import { SubscriptionList } from '@/features/subscriptions/components/SubscriptionList'
 import KPICards from '@/components/KPICards'
+import { usePlanGuard } from '@/features/billing/hooks/usePlanGuard'
+import { UpgradeModal } from '@/features/billing/components/UpgradeModal'
 
 // Категории можно получать динамически из подписок, но оставим дефолтный набор + "All"
 const defaultCategories = ['Entertainment', 'Productivity', 'Utilities', 'Education', 'Business', 'Health']
@@ -130,9 +132,24 @@ export default function Dashboard() {
   const [importOpen, setImportOpen] = useState(false)
   const [importData, setImportData] = useState('')
 
+  // Plan guard
+  const { 
+    canAddSubscription, 
+    showUpgradeModal, 
+    openUpgradeModal, 
+    closeUpgradeModal, 
+    subscriptionCount, 
+    maxSubscriptions 
+  } = usePlanGuard()
+
   const filtered = filteredSubscriptions
 
   function handleAdd(sub: SubscriptionFormValues) {
+    if (!canAddSubscription) {
+      openUpgradeModal()
+      return
+    }
+
     const { nextPayment, ...rest } = sub
     const payload: SubscriptionCreate = {
       ...rest,
@@ -211,33 +228,41 @@ export default function Dashboard() {
               <DropdownMenuItem onClick={() => setImportOpen(true)}>Import CSV</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button disabled={!canAddSubscription}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Subscription
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Subscription</DialogTitle>
+              </DialogHeader>
+              <SubscriptionForm onSubmit={handleAdd} />
+            </DialogContent>
+          </Dialog>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          {/* Desktop trigger */}
-          <DialogTrigger asChild>
-            <Button className="rounded-xl px-6 h-10 text-base font-semibold hidden md:inline-flex">+ Add Subscription</Button>
-          </DialogTrigger>
-
-          {/* Mobile FAB trigger */}
-          <DialogTrigger asChild>
-            <Button
-              variant="secondary"
-              size="icon"
-              className="fixed bottom-4 right-4 z-50 rounded-full h-14 w-14 shadow-lg md:hidden"
-              aria-label="Add subscription"
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
-          </DialogTrigger>
-
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Add Subscription</DialogTitle>
-            </DialogHeader>
-            <SubscriptionForm onSubmit={handleAdd} onCancel={() => setOpen(false)} />
-          </DialogContent>
-        </Dialog>
       </div>
+
+      {/* Plan limit warning */}
+      {!canAddSubscription && (
+        <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                Free Plan Limit Reached
+              </p>
+              <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                You have {subscriptionCount}/{maxSubscriptions} subscriptions. Upgrade to Pro for unlimited subscriptions.
+              </p>
+            </div>
+            <Button size="sm" onClick={openUpgradeModal}>
+              Upgrade
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Фильтры и summary */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
@@ -439,6 +464,14 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        open={showUpgradeModal}
+        onClose={closeUpgradeModal}
+        currentCount={subscriptionCount}
+        maxCount={maxSubscriptions}
+      />
     </div>
   )
 } 

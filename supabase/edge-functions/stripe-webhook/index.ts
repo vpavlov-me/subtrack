@@ -26,24 +26,54 @@ export const handler = async (req: Request): Promise<Response> => {
     case 'checkout.session.completed': {
       const session = event.data.object as any
       const userId = session.client_reference_id
+      
+      // Get subscription details
+      const subscription = await stripe.subscriptions.retrieve(session.subscription)
+      
       await supabase.from('profiles').update({
         customer_id: session.customer,
         subscription_id: session.subscription,
-        subscription_status: 'active',
+        subscription_status: subscription.status,
+        billing_status: subscription.status,
+        seat_count: subscription.quantity ?? 1,
+        current_period_end: new Date(subscription.current_period_end * 1000),
+        cancel_at: subscription.cancel_at ? new Date(subscription.cancel_at * 1000) : null,
       }).eq('user_id', userId)
       break
     }
+    
     case 'customer.subscription.updated': {
       const sub = event.data.object as any
       const { data: profile } = await supabase.from('profiles').select('user_id').eq('subscription_id', sub.id).single()
+      
       if (profile) {
         await supabase.from('profiles').update({
           subscription_status: sub.status,
+          billing_status: sub.status,
           seat_count: sub.quantity ?? 1,
+          current_period_end: new Date(sub.current_period_end * 1000),
+          cancel_at: sub.cancel_at ? new Date(sub.cancel_at * 1000) : null,
         }).eq('user_id', profile.user_id)
       }
       break
     }
+    
+    case 'customer.subscription.deleted': {
+      const sub = event.data.object as any
+      const { data: profile } = await supabase.from('profiles').select('user_id').eq('subscription_id', sub.id).single()
+      
+      if (profile) {
+        await supabase.from('profiles').update({
+          subscription_status: 'canceled',
+          billing_status: 'free',
+          seat_count: 1,
+          current_period_end: null,
+          cancel_at: null,
+        }).eq('user_id', profile.user_id)
+      }
+      break
+    }
+    
     default:
       console.log('Unhandled event', event.type)
   }

@@ -48,6 +48,16 @@ VITE_SUPABASE_ANON_KEY=<public-anon-key>
 VITE_WORKOS_CLIENT_ID=client_XXXXXXXXXXXXXXXXXXXX
 # необязательно
 VITE_WORKOS_API_HOSTNAME=auth.my-company.com
+
+# Stripe (для биллинга)
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_XXXXXXXXXXXXXXXXXXXX
+
+# Sentry (для мониторинга ошибок)
+VITE_SENTRY_DSN=https://XXXXXXXXXXXXXXXXXXXX@XXXXXXXXXX.ingest.sentry.io/XXXXXXXXXX
+
+# PostHog (для аналитики)
+VITE_POSTHOG_KEY=phc_XXXXXXXXXXXXXXXXXXXX
+VITE_POSTHOG_HOST=https://app.posthog.com
 ```
 
 ## Features
@@ -58,6 +68,10 @@ VITE_WORKOS_API_HOSTNAME=auth.my-company.com
 - 📤 Экспорт / 📥 импорт CSV
 - 🌗 Light/Dark тема
 - 🪄 SSO через WorkOS (AuthKit) + Supabase Auth
+- 💳 Stripe интеграция для биллинга
+- 🎯 Onboarding процесс
+- 💱 Мультивалютность
+- 📊 KPI метрики
 
 ## Testing
 
@@ -80,6 +94,10 @@ VITE_WORKOS_API_HOSTNAME=auth.my-company.com
    VITE_SUPABASE_URL=https://<ref>.supabase.co
    VITE_SUPABASE_ANON_KEY=<public-anon-key>
    VITE_WORKOS_CLIENT_ID=client_XXXXXXXXXXXX
+   VITE_STRIPE_PUBLISHABLE_KEY=pk_live_XXXXXXXXXXXX
+   VITE_SENTRY_DSN=https://XXXXXXXXXXXX@XXXXXXXXXX.ingest.sentry.io/XXXXXXXXXX
+   VITE_POSTHOG_KEY=phc_XXXXXXXXXXXX
+   VITE_POSTHOG_HOST=https://app.posthog.com
    ```
 4. Соберите и задеплойте фронт:
    ```bash
@@ -106,40 +124,54 @@ VITE_WORKOS_API_HOSTNAME=auth.my-company.com
 | `pnpm test`          | Unit-тесты Vitest                          |
 | `pnpm test:watch`    | Vitest watch-mode                          |
 | `pnpm e2e`           | Playwright e2e tests                       |
+| `pnpm seed`          | Создание демо пользователя и данных       |
 | `supabase db reset`  | Откат и повторный прогон миграций/сидов    |
 
 ## Структура каталогов
 
 ```
 src/
-  app/                 # обёртка Router + Providers
-  components/          # переиспользуемые UI
-  features/            # domain-driven модули (subscriptions и др.)
-  pages/               # страницы/роуты
-  hooks/               # общие хуки
-  lib/                 # клиенты, темы, утилиты
+├── app/                    # Основное приложение
+├── components/             # UI компоненты
+│   ├── ui/                # shadcn/ui компоненты
+│   └── ...                # Кастомные компоненты
+├── features/              # Функциональные модули
+│   ├── subscriptions/     # Управление подписками
+│   ├── teams/            # Команды и роли
+│   ├── billing/          # Платежи
+│   ├── onboarding/       # Onboarding
+│   └── currency/         # Валюты
+├── hooks/                # React hooks
+├── lib/                  # Утилиты и конфигурация
+├── pages/                # Страницы приложения
+└── types/                # TypeScript типы
 ```
 
-## База данных
+## Демо данные
 
-Миграции лежат в `supabase/migrations`.
-Сид `supabase/seed.sql` добавляет демо-подписки (Netflix, Spotify и др.).
+Для быстрого старта используйте демо пользователя:
 
 ```bash
-supabase migration new add_column_x
-supabase db reset        # применит все миграции + сиды
+# Создание демо данных
+pnpm seed
+
+# Логин
+Email: demo@subtrack.dev
+Password: demo123
 ```
 
-## Развёртывание
+## Мониторинг
 
-Приложение полностью статично:
-`pnpm build` → загружаете папку `dist/` на Vercel, Netlify, Cloudflare Pages и т.д.
+- **Sentry**: отслеживание ошибок и производительности
+- **PostHog**: аналитика пользователей и событий
+- **Vercel Analytics**: метрики производительности
 
-Supabase остаётся бэкендом (PostgreSQL + Auth + Storage).
+## Безопасность
 
-## Лицензия
-
-MIT © 2024
+- Row Level Security (RLS) в Supabase
+- Валидация всех входных данных
+- Безопасная аутентификация через WorkOS
+- Защита от CSRF и XSS атак
 
 ## Accessibility & UX
 

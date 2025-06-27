@@ -11,7 +11,8 @@ import TeamSettings from '@/pages/TeamSettings'
 import Billing from '@/pages/Billing'
 import OnboardingPage from '@/pages/Onboarding'
 import { useSubscriptions } from '@/features/subscriptions/SubscriptionsProvider'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 
 function LayoutRoute() {
   return <Layout><Outlet /></Layout>
@@ -19,8 +20,38 @@ function LayoutRoute() {
 
 function RequireOnboarding({ children }: { children: ReactElement }) {
   const { subscriptions, loading } = useSubscriptions()
-  if (loading) return null
-  if (subscriptions.length===0 && localStorage.getItem('onboarding_done')!=='true') return <Navigate to="/onboarding" replace />
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null)
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true)
+
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarding_complete')
+          .single()
+        
+        setOnboardingComplete(profile?.onboarding_complete ?? false)
+      } catch (error) {
+        console.error('Failed to check onboarding status:', error)
+        // Fallback to localStorage
+        const stored = localStorage.getItem('onboarding_done')
+        setOnboardingComplete(stored === 'true')
+      } finally {
+        setCheckingOnboarding(false)
+      }
+    }
+
+    void checkOnboarding()
+  }, [])
+
+  if (loading || checkingOnboarding) return null
+  
+  // Show onboarding if user has no subscriptions and hasn't completed onboarding
+  if (subscriptions.length === 0 && !onboardingComplete) {
+    return <Navigate to="/onboarding" replace />
+  }
+  
   return children
 }
 

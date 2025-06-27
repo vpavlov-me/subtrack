@@ -47,12 +47,12 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         if (user) {
           const { data: profile } = await supabase
             .from('profiles')
-            .select('currency_preference')
+            .select('base_currency')
             .eq('user_id', user.id)
             .single()
           
-          if (profile?.currency_preference) {
-            setUserCurrency(profile.currency_preference)
+          if (profile?.base_currency) {
+            setUserCurrency(profile.base_currency)
           }
         }
       } catch (err) {
@@ -98,7 +98,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
           .from('profiles')
           .upsert({
             user_id: user.id,
-            currency_preference: currency
+            base_currency: currency
           })
         
         setUserCurrency(currency)
