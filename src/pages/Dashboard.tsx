@@ -442,16 +442,22 @@ export default function Dashboard() {
 
   // CSV handlers
   function handleExportCSV() {
-    const csv = exportToCSV(subscriptions);
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'subscriptions.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+      const csv = exportToCSV(subscriptions);
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'subscriptions.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${subscriptions.length} subscriptions to CSV`);
+    } catch (error) {
+      console.error('CSV export failed:', error);
+      toast.error('Failed to export CSV. Please try again.');
+    }
   }
 
   async function handleImportCSV() {

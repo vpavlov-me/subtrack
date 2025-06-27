@@ -9,6 +9,7 @@ import {
 import { stripePromise } from '@/lib/stripe';
 import { supabase } from '@/lib/supabase';
 import { Crown, Check, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface UpgradeModalProps {
   open: boolean;
@@ -25,12 +26,18 @@ export function UpgradeModal({
 }: UpgradeModalProps) {
   const handleUpgrade = async () => {
     const stripe = await stripePromise;
-    if (!stripe) return;
+    if (!stripe) {
+      toast.error('Failed to load payment system');
+      return;
+    }
 
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      toast.error('Please log in to upgrade');
+      return;
+    }
 
     const { error } = await stripe.redirectToCheckout({
       lineItems: [{ price: import.meta.env.VITE_STRIPE_PRICE_ID, quantity: 1 }],
@@ -42,6 +49,9 @@ export function UpgradeModal({
 
     if (error) {
       console.error('Stripe checkout error:', error);
+      toast.error('Failed to start checkout process');
+    } else {
+      toast.success('Redirecting to checkout...');
     }
   };
 

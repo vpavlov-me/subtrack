@@ -9,15 +9,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { inviteMember } from '../api';
+import { toast } from 'sonner';
 
 export default function InviteModal({ teamId }: { teamId: string }) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   async function send() {
-    await inviteMember(teamId, email, 'member');
-    setOpen(false);
-    setEmail('');
+    if (!email.trim()) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await inviteMember(teamId, email, 'member');
+      toast.success(`Invitation sent to ${email}`);
+      setOpen(false);
+      setEmail('');
+    } catch (error) {
+      console.error('Failed to send invitation:', error);
+      toast.error('Failed to send invitation. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -33,9 +49,14 @@ export default function InviteModal({ teamId }: { teamId: string }) {
           placeholder="email@example.com"
           value={email}
           onChange={e => setEmail(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && send()}
         />
-        <Button className="w-full" onClick={send} disabled={!email}>
-          Send invite
+        <Button 
+          className="w-full" 
+          onClick={send} 
+          disabled={!email.trim() || isLoading}
+        >
+          {isLoading ? 'Sending...' : 'Send invite'}
         </Button>
       </DialogContent>
     </Dialog>
