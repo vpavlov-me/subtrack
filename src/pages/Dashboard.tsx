@@ -111,7 +111,6 @@ export default function Dashboard() {
   const {
     subscriptions,
     filteredSubscriptions,
-    totals,
     categoryFilter: category,
     setCategoryFilter: setCategory,
     billingCycleFilter: billingCycle,
