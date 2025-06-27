@@ -2,4 +2,6 @@ functions:
   reminder:
     schedule: "0 9 * * *" # daily 09:00 UTC
   currency_rates_refresh:
-    schedule: "0 * * * *" # hourly 
+    schedule: "0 * * * *" # hourly
+  slackDigest:
+    schedule: "0 9 * * *" # daily 09:00 UTC (same time as reminder) 

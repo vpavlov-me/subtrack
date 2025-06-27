@@ -1,232 +1,267 @@
-# SubTrack
+# SubTrack - Subscription Management Platform
 
-Минималистичный трекер подписок: фиксируйте регулярные платежи, держите бюджет под контролем.
+A modern, production-ready subscription tracking application built with React 19, TypeScript, and Supabase.
 
-## Стек
+## ✨ Features
 
-- React 19 + TypeScript + Vite
-- TailwindCSS + shadcn/ui + Radix UI
-- Supabase (PostgreSQL, Auth, RLS, Storage)
-- AuthKit WorkOS (SSO) + Supabase Auth
-- React Router v6
-- react-hook-form + zod
-- date-fns
+### Core Functionality
+- 📊 **Dashboard Analytics** - KPI cards, spending charts, category breakdowns
+- 💳 **Subscription Management** - CRUD operations with bulk CSV import/export
+- 🎯 **Smart Onboarding** - Guided setup with CSV import wizard
+- 💰 **Multi-Currency Support** - Real-time exchange rates with 6+ currencies
+- 👥 **Team Collaboration** - Role-based access with seat management
+- 🔔 **Smart Notifications** - Email & Slack reminders for upcoming payments
+- 📱 **Responsive Design** - Mobile-first with PWA support
 
-## Требования
+### Advanced Features
+- 📈 **Category Analytics** - Materialized views with Recharts visualizations
+- 🛡️ **Seat Management** - RLS-enforced team limits with upgrade prompts
+- 🔄 **CSV Import/Export** - Robust parsing with validation and error handling
+- 🎨 **Storybook Integration** - Component library with Chromatic deployment
+- 🌙 **Dark Mode** - Theme switching with system preference detection
+- ♿ **Accessibility** - WCAG compliant with keyboard navigation
 
+## 🛠 Tech Stack
+
+- **Frontend**: React 19 + TypeScript + Vite
+- **UI**: TailwindCSS + shadcn/ui components
+- **Backend**: Supabase (PostgreSQL + RLS + Edge Functions)
+- **Auth**: Supabase Email/Password + WorkOS SSO
+- **Billing**: Stripe Checkout with webhook integration
+- **Testing**: Vitest (unit) + Playwright (e2e)
+- **CI/CD**: GitHub Actions + Vercel deployment
+- **Monitoring**: Sentry + PostHog + Vercel Analytics
+
+## 🚀 Quick Start
+
+### Prerequisites
 - Node.js ≥ 20
-- pnpm ≥ 8
-- Supabase CLI ≥ 1.176.7 (для локальной БД)
+- npm ≥ 8
+- Supabase CLI ≥ 1.176.7
 
-## Быстрый старт
-
+### 1. Clone & Install
 ```bash
-git clone https://github.com/<you>/subtrack.git
+git clone https://github.com/your-username/subtrack.git
 cd subtrack
-
-# установка зависимостей
-pnpm install
-
-# запуск Supabase (PostgreSQL + API + Studio)
-supabase start
-
-# скопируйте пример env и заполните
-cp .env.example .env.local
-
-# запуск фронтенда
-pnpm dev      # http://localhost:5173
+npm install
 ```
 
-### Переменные окружения
-
+### 2. Environment Setup
+Create `.env.local`:
 ```env
 # Supabase
-VITE_SUPABASE_URL=http://localhost:54321
-VITE_SUPABASE_ANON_KEY=<public-anon-key>
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 
-# WorkOS
-VITE_WORKOS_CLIENT_ID=client_XXXXXXXXXXXXXXXXXXXX
-# необязательно
-VITE_WORKOS_API_HOSTNAME=auth.my-company.com
+# WorkOS AuthKit
+VITE_WORKOS_CLIENT_ID=your-workos-client-id
 
-# Stripe (для биллинга)
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_XXXXXXXXXXXXXXXXXXXX
+# Stripe
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your-stripe-key
 
-# Sentry (для мониторинга ошибок)
-VITE_SENTRY_DSN=https://XXXXXXXXXXXXXXXXXXXX@XXXXXXXXXX.ingest.sentry.io/XXXXXXXXXX
-
-# PostHog (для аналитики)
-VITE_POSTHOG_KEY=phc_XXXXXXXXXXXXXXXXXXXX
+# Monitoring (Optional)
+VITE_SENTRY_DSN=your-sentry-dsn
+VITE_POSTHOG_KEY=your-posthog-key
 VITE_POSTHOG_HOST=https://app.posthog.com
 ```
 
-## Features
-
-- 🖥️ Дашборд с карточками подписок, календарём платежей и виджетами затрат
-- ➕ CRUD-операции подписок (Supabase RLS)
-- 🔔 Edge-функция напоминаний за 3 дня до списания
-- 📤 Экспорт / 📥 импорт CSV
-- 🌗 Light/Dark тема
-- 🪄 SSO через WorkOS (AuthKit) + Supabase Auth
-- 💳 Stripe интеграция для биллинга
-- 🎯 Onboarding процесс
-- 💱 Мультивалютность
-- 📊 KPI метрики
-
-## Testing
-
-- **Vitest** для unit/logic (команда `pnpm test`)
-- **Playwright** smoke: Landing → Title, далее планируем end-to-end CRUD
-- **Husky** pre-commit: `lint` + `test`
-- **CI GitHub Actions**: lint → vitest → build
-
-## Deploy Guide
-
-1. Создайте проект на [Supabase](https://supabase.com) и выкатите миграции:
-   ```bash
-   supabase link --project-ref your-ref
-   supabase db push
-   supabase functions deploy reminder --no-verify-jwt
-   ```
-2. В настройках **Auth → Settings** укажите `SITE_URL` и разрешённые редиректы.
-3. Настройте переменные среды на хостинге (Vercel/Netlify):
-   ```env
-   VITE_SUPABASE_URL=https://<ref>.supabase.co
-   VITE_SUPABASE_ANON_KEY=<public-anon-key>
-   VITE_WORKOS_CLIENT_ID=client_XXXXXXXXXXXX
-   VITE_STRIPE_PUBLISHABLE_KEY=pk_live_XXXXXXXXXXXX
-   VITE_SENTRY_DSN=https://XXXXXXXXXXXX@XXXXXXXXXX.ingest.sentry.io/XXXXXXXXXX
-   VITE_POSTHOG_KEY=phc_XXXXXXXXXXXX
-   VITE_POSTHOG_HOST=https://app.posthog.com
-   ```
-4. Соберите и задеплойте фронт:
-   ```bash
-   pnpm build
-   # vercel deploy или netlify deploy
-   ```
-
-## Roadmap
-
-- [ ] Toast-уведомления (shadcn `useToast`)
-- [ ] Storybook для UI компонентов
-- [ ] Импорт из банковской выписки (CSV/Email)
-- [ ] Категорийная аналитика + графики
-- [ ] PWA + offline-cache
-
-## Скрипты (обновлено)
-
-| Скрипт               | Описание                                   |
-|----------------------|--------------------------------------------|
-| `pnpm dev`           | Запуск фронтенда (Vite)                    |
-| `pnpm build`         | Сборка production                          |
-| `pnpm preview`       | Локальный preview                          |
-| `pnpm lint`          | ESLint (warnings=error)                    |
-| `pnpm test`          | Unit-тесты Vitest                          |
-| `pnpm test:watch`    | Vitest watch-mode                          |
-| `pnpm e2e`           | Playwright e2e tests                       |
-| `pnpm seed`          | Создание демо пользователя и данных       |
-| `supabase db reset`  | Откат и повторный прогон миграций/сидов    |
-
-## Структура каталогов
-
-```
-src/
-├── app/                    # Основное приложение
-├── components/             # UI компоненты
-│   ├── ui/                # shadcn/ui компоненты
-│   └── ...                # Кастомные компоненты
-├── features/              # Функциональные модули
-│   ├── subscriptions/     # Управление подписками
-│   ├── teams/            # Команды и роли
-│   ├── billing/          # Платежи
-│   ├── onboarding/       # Onboarding
-│   └── currency/         # Валюты
-├── hooks/                # React hooks
-├── lib/                  # Утилиты и конфигурация
-├── pages/                # Страницы приложения
-└── types/                # TypeScript типы
-```
-
-## Демо данные
-
-Для быстрого старта используйте демо пользователя:
-
+### 3. Database Setup
 ```bash
-# Создание демо данных
-pnpm seed
+# Start local Supabase
+supabase start
 
-# Логин
-Email: demo@subtrack.dev
-Password: demo123
+# Apply migrations
+supabase db reset
+
+# Deploy edge functions
+supabase functions deploy
+
+# Create demo data
+npm run seed
 ```
 
-## Мониторинг
-
-- **Sentry**: отслеживание ошибок и производительности
-- **PostHog**: аналитика пользователей и событий
-- **Vercel Analytics**: метрики производительности
-
-## Безопасность
-
-- Row Level Security (RLS) в Supabase
-- Валидация всех входных данных
-- Безопасная аутентификация через WorkOS
-- Защита от CSRF и XSS атак
-
-## Accessibility & UX
-
-- Skip link (`Tab` → Skip to content)
-- Landmark roles (`banner`, `main`), descriptive `aria-label`s
-- Focus-visible ring on interactive elements
-- Toast notifications announced via `aria-live` region
-- Keyboard shortcut `⌘/Ctrl + K` toggles light/dark theme
-- Mobile‐first: на экранах < 768 px список подписок отображается карточками вместо таблицы (гориз. скролл устранён)
-- Lazy-loading иконок, правильные `alt`-тексты
-
-## Overview
-
-SubTrack — это минималистичный менеджер подписок. Помогает:
-
-1. Вести учёт всех сервисов и регулярных платежей.
-2. Получать e-mail-напоминания перед списанием средств.
-3. Видеть агрегированную статистику по расходам.
-4. Экспортировать/импортировать данные (CSV) и иметь кросс-платформенный доступ (PWA).
-
-Фронтенд полностью статичен (SPA), развёртывается на Vercel/Netlify. Бэкенд — Supabase (PostgreSQL + Edge Functions + RLS + Storage).
-
-## Architecture
-
-```mermaid
-flowchart TD
-  subgraph Frontend (Vite + React)
-    A[React SPA]
-    A -->|fetch| B[(Supabase REST)]
-    A -->|SSO| C[WorkOS AuthKit]
-    A -->|Realtime| D[(Supabase Realtime)]
-  end
-  subgraph Supabase
-    B --> DB[(PostgreSQL)]
-    E[Edge Function: reminder] --> DB
-    E --> M[Auth Admin]--> Email
-    Storage[(Bucket: icons)]
-  end
+### 4. Development
+```bash
+npm run dev          # Start development server
+npm run test         # Run unit tests
+npm run e2e          # Run E2E tests
+npm run storybook    # Start Storybook
 ```
 
-1. Пользователь авторизуется через WorkOS (SSO) или Supabase Email/Password.
-2. Все CRUD операции выполняются напрямую из SPA через `@supabase/supabase-js`, защищены RLS.
-3. Edge-функция `reminder` раз в день отправляет email о платежах, которые наступят через 3 дня.
-4. Иконки сервисов хранятся в public-bucket `icons` и отдаются через CDN.
+## 📊 Demo Data
 
-### Каталоги
+After running `npm run seed`, use these credentials:
+- **Email**: `demo@subtrack.dev`
+- **Password**: `demo123`
+
+## 🏗 Architecture
 
 ```
-apps/              # (зарезервировано под микрофронты)
-public/            # статика + manifest + PWA icons
-supabase/          # RLS-политики, миграции, функции
-src/
-  app/             # Router + глобальные провайдеры
-  assets/          # SVG, логотипы
-  components/
-    ui/            # атомарные компоненты (shadcn)
-    marketing/     # лендинг/B2B блоки
+Frontend (React + Vite)
+├── Components (shadcn/ui)
+├── Features (subscriptions, teams, billing)
+├── Pages (dashboard, settings, onboarding)
+└── Hooks & Utils
+
+Backend (Supabase)
+├── PostgreSQL (RLS policies)
+├── Edge Functions (reminders, webhooks)
+├── Auth (Supabase + WorkOS)
+└── Storage (icons, avatars)
 ```
+
+## 🧪 Testing
+
+### Unit Tests
+```bash
+npm test              # Run all tests
+npm run test:watch    # Watch mode
+npm run test:coverage # Coverage report
+```
+
+### E2E Tests
+```bash
+npm run e2e           # Run Playwright tests
+npm run e2e:ui        # Playwright UI mode
+```
+
+### Component Testing
+```bash
+npm run storybook     # Storybook development
+npm run storybook:build # Build for Chromatic
+```
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+1. Connect GitHub repository
+2. Set environment variables
+3. Deploy automatically on push to `main`
+
+### Manual Deployment
+```bash
+npm run build
+vercel --prod
+```
+
+## 📈 Monitoring & Analytics
+
+### Error Tracking
+- **Sentry**: Real-time error monitoring with source maps
+- **Performance**: Core Web Vitals tracking
+
+### User Analytics
+- **PostHog**: Event tracking, funnels, feature flags
+- **Vercel Analytics**: Page views, performance metrics
+
+### Infrastructure
+- **Supabase**: Database monitoring, function logs
+- **Vercel**: Build analytics, function performance
+
+## 🔧 Configuration
+
+### Environment Variables
+
+#### Required
+```env
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+VITE_WORKOS_CLIENT_ID=your-workos-client-id
+VITE_STRIPE_PUBLISHABLE_KEY=your-stripe-key
+```
+
+#### Optional (Monitoring)
+```env
+VITE_SENTRY_DSN=your-sentry-dsn
+VITE_POSTHOG_KEY=your-posthog-key
+VITE_POSTHOG_HOST=https://app.posthog.com
+```
+
+### Supabase Configuration
+- **RLS Policies**: Row-level security for data isolation
+- **Edge Functions**: Reminder system, webhook handlers
+- **Cron Jobs**: Daily reminders, currency updates
+- **Storage**: Public buckets for icons and avatars
+
+## 📚 API Reference
+
+### Core Endpoints
+- `GET /subscriptions` - User's subscriptions
+- `POST /subscriptions` - Create subscription
+- `PUT /subscriptions/:id` - Update subscription
+- `DELETE /subscriptions/:id` - Delete subscription
+
+### Team Management
+- `GET /teams` - User's teams
+- `POST /teams/:id/members` - Invite team member
+- `DELETE /teams/:id/members/:memberId` - Remove member
+
+### Analytics
+- `GET /analytics/category` - Category spending breakdown
+- `POST /analytics/refresh` - Refresh materialized views
+
+## 🔒 Security
+
+- **Row Level Security (RLS)**: Database-level access control
+- **JWT Authentication**: Secure token-based auth
+- **Input Validation**: Zod schemas for all user inputs
+- **CSRF Protection**: Built-in CSRF safeguards
+- **Rate Limiting**: API rate limiting via Supabase
+
+## ♿ Accessibility
+
+- **WCAG 2.1 AA**: Full accessibility compliance
+- **Keyboard Navigation**: Complete keyboard support
+- **Screen Reader**: ARIA labels and semantic HTML
+- **Focus Management**: Proper focus indicators
+- **Color Contrast**: High contrast ratios
+
+## 📱 PWA Features
+
+- **Offline Support**: Service worker caching
+- **Install Prompt**: Native app installation
+- **Push Notifications**: Payment reminders
+- **Background Sync**: Data synchronization
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+### Development Guidelines
+- Follow TypeScript strict mode
+- Write tests for new features
+- Update Storybook stories
+- Follow conventional commits
+- Ensure accessibility compliance
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: [docs.subtrack.dev](https://docs.subtrack.dev)
+- **Issues**: [GitHub Issues](https://github.com/your-username/subtrack/issues)
+- **Discord**: [Community Server](https://discord.gg/subtrack)
+
+## 🗺 Roadmap
+
+### v1.1 (Next Release)
+- [ ] Advanced reporting and exports
+- [ ] Integration with bank APIs
+- [ ] Mobile app (React Native)
+- [ ] Advanced team permissions
+
+### v1.2 (Future)
+- [ ] AI-powered spending insights
+- [ ] Subscription optimization recommendations
+- [ ] Multi-language support
+- [ ] Advanced automation rules
+
+---
+
+Built with ❤️ by the SubTrack team

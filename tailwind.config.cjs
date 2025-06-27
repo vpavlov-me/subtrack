@@ -66,12 +66,58 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "slide-in": {
+          from: { transform: "translateY(10px)", opacity: "0" },
+          to: { transform: "translateY(0)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.3s ease-out",
+        "slide-in": "slide-in 0.3s ease-out",
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+      },
+      screens: {
+        'xs': '320px',
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    // Custom focus-visible plugin
+    function({ addUtilities }) {
+      const newUtilities = {
+        '.focus-visible': {
+          'outline': '2px solid hsl(var(--ring))',
+          'outline-offset': '2px',
+          'border-radius': 'var(--radius)',
+        },
+        '.focus-visible-ring': {
+          '&:focus-visible': {
+            'box-shadow': '0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring))',
+          },
+        },
+        '.sr-only': {
+          'position': 'absolute',
+          'width': '1px',
+          'height': '1px',
+          'padding': '0',
+          'margin': '-1px',
+          'overflow': 'hidden',
+          'clip': 'rect(0, 0, 0, 0)',
+          'white-space': 'nowrap',
+          'border': '0',
+        },
+      }
+      addUtilities(newUtilities)
+    }
+  ],
 } 

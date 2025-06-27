@@ -5,6 +5,9 @@ import { Table, TableHead, TableHeader, TableRow, TableCell, TableBody } from '@
 import { Button } from '@/components/ui/button'
 import RoleBadge from '@/features/teams/components/RoleBadge'
 import InviteModal from '@/features/teams/components/InviteModal'
+import { SeatLimitBanner, SeatUsageIndicator } from '@/features/billing/components/SeatLimitBanner'
+import { usePlanGuard } from '@/features/billing/hooks/usePlanGuard'
+import { supabase } from '@/lib/supabase'
 
 interface TeamMember {
   member_id: string
@@ -13,25 +16,54 @@ interface TeamMember {
   full_name?: string
 }
 
+interface SeatUsage {
+  seat_count: number
+  current_members: number
+  available_seats: number
+  is_at_limit: boolean
+}
+
 export default function TeamSettings() {
   const { currentTeam } = useTeams()
   const [members, setMembers] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [seatUsage, setSeatUsage] = useState<SeatUsage | null>(null)
+  const { openUpgradeModal } = usePlanGuard()
 
   useEffect(() => {
     if (currentTeam) {
       setLoading(true)
       setError(null)
-      fetchTeamMembers(currentTeam.id)
-        .then(setMembers)
+      
+      // Fetch team members and seat usage
+      Promise.all([
+        fetchTeamMembers(currentTeam.id),
+        fetchSeatUsage(currentTeam.id)
+      ])
+        .then(([membersData, seatData]) => {
+          setMembers(membersData)
+          setSeatUsage(seatData)
+        })
         .catch((err) => {
-          console.error('Failed to fetch team members:', err)
-          setError('Failed to load team members')
+          console.error('Failed to fetch team data:', err)
+          setError('Failed to load team data')
         })
         .finally(() => setLoading(false))
     }
   }, [currentTeam])
+
+  const fetchSeatUsage = async (teamId: string): Promise<SeatUsage> => {
+    const { data, error } = await supabase
+      .rpc('get_team_seat_usage', { team_id_param: teamId })
+    
+    if (error) {
+      console.error('Failed to fetch seat usage:', error)
+      return { seat_count: 1, current_members: 1, available_seats: 0, is_at_limit: false }
+    }
+    
+    return data?.[0] || { seat_count: 1, current_members: 1, available_seats: 0, is_at_limit: false }
+  }
 
   const handleRemoveMember = async (memberId: string) => {
     if (!currentTeam) return
@@ -41,6 +73,10 @@ export default function TeamSettings() {
       // Обновляем список участников
       const updatedMembers = members.filter(m => m.member_id !== memberId)
       setMembers(updatedMembers)
+      
+      // Refresh seat usage
+      const newSeatUsage = await fetchSeatUsage(currentTeam.id)
+      setSeatUsage(newSeatUsage)
     } catch (err) {
       console.error('Failed to remove member:', err)
       setError('Failed to remove team member')
@@ -71,6 +107,33 @@ export default function TeamSettings() {
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
           {error}
         </div>
+      )}
+      
+      {/* Seat Usage Indicator */}
+      {seatUsage && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Team Seats
+            </h3>
+            <span className="text-sm text-gray-500">
+              {seatUsage.current_members} of {seatUsage.seat_count} used
+            </span>
+          </div>
+          <SeatUsageIndicator 
+            currentMembers={seatUsage.current_members} 
+            maxSeats={seatUsage.seat_count} 
+          />
+        </div>
+      )}
+      
+      {/* Seat Limit Banner */}
+      {seatUsage && seatUsage.is_at_limit && (
+        <SeatLimitBanner
+          currentMembers={seatUsage.current_members}
+          maxSeats={seatUsage.seat_count}
+          onUpgrade={openUpgradeModal}
+        />
       )}
       
       <InviteModal teamId={currentTeam.id} />

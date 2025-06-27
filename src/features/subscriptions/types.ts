@@ -10,6 +10,7 @@ export interface Subscription {
   category?: string;
   paymentMethod?: string;
   notes?: string;
+  status?: 'active' | 'cancelled' | 'paused';
   createdAt: Date;
   updatedAt: Date;
 }

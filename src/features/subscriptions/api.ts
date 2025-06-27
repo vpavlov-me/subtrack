@@ -3,6 +3,7 @@
 
 import { supabase } from '@/lib/supabase'
 import { Subscription, SubscriptionCreate, SubscriptionUpdate } from './types'
+import { parseCsvSubscriptions, CsvParseResult } from '@/lib/csv'
 
 // Тип строки из БД (snake_case)
 interface DbSubscriptionRow {
@@ -64,7 +65,7 @@ export async function fetchSubscriptions(): Promise<Subscription[]> {
   return (data ?? []).map(fromDb)
 }
 
-// Добавление новой подписки
+// Добавление подписки
 export async function addSubscription(subscription: SubscriptionCreate): Promise<Subscription> {
   const { data, error } = await supabase
     .from('subscriptions')
@@ -72,8 +73,8 @@ export async function addSubscription(subscription: SubscriptionCreate): Promise
     .select()
     .single()
 
-  if (error || !data) {
-    console.error('Error adding subscription:', error?.message)
+  if (error) {
+    console.error('Error adding subscription:', error.message)
     throw new Error('Failed to add subscription')
   }
 
@@ -89,8 +90,8 @@ export async function updateSubscription(id: string, subscription: SubscriptionU
     .select()
     .single()
 
-  if (error || !data) {
-    console.error('Error updating subscription:', error?.message)
+  if (error) {
+    console.error('Error updating subscription:', error.message)
     throw new Error('Failed to update subscription')
   }
 
@@ -131,28 +132,42 @@ export function exportToCSV(subscriptions: Subscription[]): string {
   }
 }
 
-// Импорт из CSV
-export function importFromCSV(csv: string): SubscriptionCreate[] {
+// Импорт из CSV с улучшенной валидацией
+export async function importFromCSV(csv: string): Promise<CsvParseResult> {
   try {
-    // пропускаем первую строку (заголовки)
-    const [, ...rows] = csv.split('\n');
+    // Используем новый CSV парсер
+    const parseResult = parseCsvSubscriptions(csv)
+    
+    if (!parseResult.success || !parseResult.data) {
+      return parseResult
+    }
 
-    return rows
-      .filter(row => row.trim()) // Пропускаем пустые строки
-      .map(row => {
-        const [name, price, billingCycle, nextBillingDate] = row.split(',');
-        if (!name || !price || !billingCycle || !nextBillingDate) {
-          throw new Error('Invalid CSV format');
-        }
-        return {
-          name,
-          price: parseFloat(price),
-          billingCycle: billingCycle as 'monthly' | 'yearly' | 'custom',
-          nextBillingDate: new Date(nextBillingDate),
-        };
-      });
+    // Bulk insert с обработкой ошибок
+    const { data, error } = await supabase
+      .from('subscriptions')
+      .insert(parseResult.data.map(toDb))
+      .select()
+
+    if (error) {
+      console.error('Error importing subscriptions:', error.message)
+      return {
+        success: false,
+        errors: [`Database error: ${error.message}`],
+        warnings: parseResult.warnings
+      }
+    }
+
+    return {
+      success: true,
+      data: (data ?? []).map(fromDb),
+      warnings: parseResult.warnings
+    }
+
   } catch (error) {
     console.error('Error importing from CSV:', error);
-    throw new Error('Failed to import subscriptions');
+    return {
+      success: false,
+      errors: [`Failed to import subscriptions: ${error instanceof Error ? error.message : 'Unknown error'}`]
+    }
   }
 } 

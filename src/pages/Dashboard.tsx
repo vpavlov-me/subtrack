@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import SubscriptionForm from '@/components/SubscriptionForm'
 import { addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, format, isBefore, isToday } from 'date-fns'
 import { useSubscriptions } from '@/features/subscriptions/SubscriptionsProvider'
-import { Plus } from 'lucide-react'
+import { Plus, TrendingUp, TrendingDown, DollarSign, Users, Calendar } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { exportToCSV, importFromCSV } from '@/features/subscriptions/api'
@@ -24,6 +24,11 @@ import { SubscriptionList } from '@/features/subscriptions/components/Subscripti
 import KPICards from '@/components/KPICards'
 import { usePlanGuard } from '@/features/billing/hooks/usePlanGuard'
 import { UpgradeModal } from '@/features/billing/components/UpgradeModal'
+import { toast } from 'sonner'
+import { DashboardCategoryChart } from '@/components/DashboardCategoryChart'
+import { Skeleton } from '@/components/ui/skeleton'
+import { FadeIn, SlideIn, StaggeredList, LoadingSpinner } from '@/components/ui/transitions'
+import { useCurrency } from '@/features/currency/CurrencyProvider'
 
 // Категории можно получать динамически из подписок, но оставим дефолтный набор + "All"
 const defaultCategories = ['Entertainment', 'Productivity', 'Utilities', 'Education', 'Business', 'Health']
@@ -120,6 +125,7 @@ export default function Dashboard() {
     addSubscription,
     updateSubscription,
     deleteSubscription,
+    reload,
   } = useSubscriptions()
 
   const [open, setOpen] = useState(false)
@@ -143,6 +149,113 @@ export default function Dashboard() {
   } = usePlanGuard()
 
   const filtered = filteredSubscriptions
+
+  // For demo, add loading state
+  const loading = false
+  const [isLoading, setIsLoading] = useState(true)
+
+  const { userCurrency } = useCurrency()
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const totalSpend = subscriptions.reduce((sum, sub) => sum + (sub.price || 0), 0)
+  const activeSubscriptions = subscriptions.filter(sub => sub.status === 'active')
+  const upcomingRenewals = subscriptions
+    .filter(sub => sub.status === 'active')
+    .sort((a, b) => new Date(a.nextBillingDate).getTime() - new Date(b.nextBillingDate).getTime())
+    .slice(0, 5)
+
+  const kpiCards = [
+    {
+      title: 'Total Spend',
+      value: `${userCurrency}${totalSpend.toFixed(2)}`,
+      change: '+12.5%',
+      trend: 'up' as const,
+      icon: DollarSign
+    },
+    {
+      title: 'Active Subscriptions',
+      value: activeSubscriptions.length.toString(),
+      change: '+2',
+      trend: 'up' as const,
+      icon: Users
+    },
+    {
+      title: 'Monthly Average',
+      value: `${userCurrency}${(totalSpend / Math.max(activeSubscriptions.length, 1)).toFixed(2)}`,
+      change: '-5.2%',
+      trend: 'down' as const,
+      icon: TrendingUp
+    }
+  ]
+
+  if (loading || isLoading) {
+    return (
+      <div className="max-w-4xl mx-auto p-6 space-y-6">
+        <FadeIn>
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </FadeIn>
+        
+        <StaggeredList className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-4" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-20 mb-2" />
+                <Skeleton className="h-3 w-16" />
+              </CardContent>
+            </Card>
+          ))}
+        </StaggeredList>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-40" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
 
   function handleAdd(sub: SubscriptionFormValues) {
     if (!canAddSubscription) {
@@ -201,14 +314,35 @@ export default function Dashboard() {
 
   async function handleImportCSV() {
     try {
-      const newSubs = importFromCSV(importData)
-      for (const s of newSubs) {
-        await addSubscription(s)
+      const result = await importFromCSV(importData)
+      
+      if (result.success && result.data) {
+        // Refresh subscriptions list
+        await reload()
+        
+        // Show success message with count
+        toast.success(`Successfully imported ${result.data.length} subscription(s)`)
+        
+        // Show warnings if any
+        if (result.warnings && result.warnings.length > 0) {
+          result.warnings.forEach(warning => {
+            toast.warning(warning)
+          })
+        }
+        
+        setImportData('')
+        setImportOpen(false)
+      } else {
+        // Show errors
+        if (result.errors) {
+          result.errors.forEach(error => {
+            toast.error(error)
+          })
+        }
       }
-      setImportData('')
-      setImportOpen(false)
     } catch (err) {
       console.error('CSV import failed', err)
+      toast.error('Failed to import CSV. Please check the format and try again.')
     }
   }
 
@@ -324,6 +458,9 @@ export default function Dashboard() {
         <SpendLineChart />
       </div>
 
+      {/* Category Analytics */}
+      <DashboardCategoryChart />
+
       {/* Tabs: List/Calendar */}
       <Tabs value={tab} onValueChange={v => setTab(v as 'list'|'calendar')} className="w-full">
         <TabsList className="mb-4">
@@ -361,8 +498,9 @@ export default function Dashboard() {
                     <TableCell className="font-medium text-zinc-900">{sub.name}</TableCell>
                     <TableCell>{sub.nextBillingDate instanceof Date ? format(sub.nextBillingDate, 'yyyy-MM-dd') : sub.nextBillingDate}</TableCell>
                     <TableCell>
-                      <span className="text-zinc-900 font-semibold">{sub.price}</span>
-                      <span className="text-xs text-zinc-500 ml-1">{sub.currency}</span>
+                      <p className="text-sm font-medium">
+                        {userCurrency}{sub.price}
+                      </p>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="rounded px-2 text-xs text-zinc-700 border-zinc-300 bg-zinc-100">
