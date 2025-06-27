@@ -55,17 +55,24 @@ npm install
 Create `.env.local`:
 
 ```env
-# Supabase
+# Supabase (Client-side)
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 
-# WorkOS AuthKit
+# WorkOS AuthKit (Client-side)
 VITE_WORKOS_CLIENT_ID=your-workos-client-id
 
-# Stripe
+# Stripe (Client-side)
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your-stripe-key
 
-# Monitoring (Optional)
+# Stripe (Server-side only)
+STRIPE_SECRET_KEY=sk_test_your-stripe-secret-key
+STRIPE_WEBHOOK_SECRET=whsec_your-stripe-webhook-secret
+
+# Slack Integration (Server-side only)
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/your-webhook-url
+
+# Monitoring (Client-side, Optional)
 VITE_SENTRY_DSN=your-sentry-dsn
 VITE_POSTHOG_KEY=your-posthog-key
 VITE_POSTHOG_HOST=https://app.posthog.com
@@ -177,13 +184,18 @@ For detailed deployment instructions, see [📖 Vercel Deployment Guide](docs/de
 #### Environment Setup
 
 ```bash
-# Required variables (set in Vercel dashboard)
+# Required client-side variables (set in Vercel dashboard)
 VITE_SUPABASE_URL=your-supabase-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 VITE_WORKOS_CLIENT_ID=your-workos-client-id
 VITE_STRIPE_PUBLISHABLE_KEY=your-stripe-key
 
-# Optional monitoring
+# Required server-side variables (for API routes and edge functions)
+STRIPE_SECRET_KEY=your-stripe-secret-key
+STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
+SLACK_WEBHOOK_URL=your-slack-webhook-url
+
+# Optional monitoring (client-side)
 VITE_SENTRY_DSN=your-sentry-dsn
 VITE_POSTHOG_KEY=your-posthog-key
 ```
@@ -234,13 +246,21 @@ docker run -p 3000:3000 subtrack
 
 ### Environment Variables
 
-#### Required
+#### Client-side (Required)
 
 ```env
 VITE_SUPABASE_URL=your-supabase-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 VITE_WORKOS_CLIENT_ID=your-workos-client-id
 VITE_STRIPE_PUBLISHABLE_KEY=your-stripe-key
+```
+
+#### Server-side (Required for API routes)
+
+```env
+STRIPE_SECRET_KEY=your-stripe-secret-key
+STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
+SLACK_WEBHOOK_URL=your-slack-webhook-url
 ```
 
 #### Optional (Monitoring)
