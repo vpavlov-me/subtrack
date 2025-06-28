@@ -94,7 +94,34 @@ supabase functions deploy
 npm run seed
 ```
 
-### 4. Development
+### 4. Test Authentication Setup
+
+For development and testing, SubTrack includes a secure test authentication system:
+
+```bash
+# Enable test authentication
+export VITE_TEST_AUTH=1
+
+# Seed test users
+npm run seed:test
+
+# Clean up test data
+npm run truncate:test
+```
+
+**Test Users:**
+- **Admin**: `admin@demo.dev` / `test123456`
+- **Member**: `member@demo.dev` / `test123456`
+
+**Features:**
+- 🔒 **Data Isolation**: Test users can only access test data
+- 🛡️ **RLS Policies**: Row-level security prevents cross-environment access
+- 🧪 **UI Switcher**: Dropdown to switch between test users in development
+- 🧹 **Auto Cleanup**: CI automatically removes test data after tests
+
+For detailed setup instructions, see [📖 Test Authentication Guide](docs/testing-auth.md).
+
+### 5. Development
 
 ```bash
 npm run dev          # Start development server

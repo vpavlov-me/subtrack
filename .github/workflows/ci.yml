@@ -67,6 +67,12 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
+    env:
+      VITE_TEST_AUTH: 1
+      VITE_SUPABASE_URL: ${{ secrets.SUPABASE_DEV_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_DEV_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_DEV_SERVICE_KEY }}
+      BASE_URL: http://localhost:5173
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -83,8 +89,29 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
+      - name: Seed test users
+        run: npm run seed:test
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_DEV_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_DEV_SERVICE_KEY }}
+
+      - name: Start development server
+        run: npm run dev &
+        env:
+          VITE_TEST_AUTH: 1
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_DEV_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_DEV_ANON_KEY }}
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:5173
+
       - name: Run E2E tests
         run: npm run e2e
+        env:
+          VITE_TEST_AUTH: 1
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_DEV_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_DEV_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_DEV_SERVICE_KEY }}
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -100,6 +127,13 @@ jobs:
           name: vercel-static
           path: dist/
           retention-days: 7
+
+      - name: Cleanup test data
+        if: always()
+        run: npm run truncate:test
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_DEV_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_DEV_SERVICE_KEY }}
 
   # Build
   build:

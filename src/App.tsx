@@ -20,6 +20,10 @@ import TeamSettings from '@/pages/TeamSettings';
 import Billing from '@/pages/Billing';
 import OnboardingPage from '@/pages/Onboarding';
 import TeamAdvanced from '@/pages/TeamAdvanced';
+import ResetPassword from '@/pages/ResetPassword';
+import ResetPasswordConfirm from '@/pages/ResetPasswordConfirm';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { AuthProvider } from '@/app/AuthProvider';
 import { useSubscriptions } from '@/features/subscriptions/SubscriptionsProvider';
 import { ReactElement, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -71,67 +75,77 @@ function RequireOnboarding({ children }: { children: ReactElement }) {
   return children;
 }
 
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/reset-password/confirm" element={<ResetPasswordConfirm />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route element={<ProtectedRoute><LayoutRoute /></ProtectedRoute>}>
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="/dashboard"
+          element={
+            <RequireOnboarding>
+              <Dashboard />
+            </RequireOnboarding>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <RequireOnboarding>
+              <Analytics />
+            </RequireOnboarding>
+          }
+        />
+        <Route
+          path="/import"
+          element={
+            <RequireOnboarding>
+              <Import />
+            </RequireOnboarding>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <RequireOnboarding>
+              <Notifications />
+            </RequireOnboarding>
+          }
+        />
+        <Route path="/transactions" element={<Transactions />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings/team" element={<TeamSettings />} />
+        <Route path="/settings/billing" element={<Billing />} />
+        <Route
+          path="/subscriptions"
+          element={<Navigate to="/dashboard" replace />}
+        />
+        <Route
+          path="/team/advanced"
+          element={
+            <RequireOnboarding>
+              <TeamAdvanced />
+            </RequireOnboarding>
+          }
+        />
+      </Route>
+      <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
+    </Routes>
+  );
+}
+
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Landing />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route element={<LayoutRoute />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route
-            path="/dashboard"
-            element={
-              <RequireOnboarding>
-                <Dashboard />
-              </RequireOnboarding>
-            }
-          />
-          <Route
-            path="/analytics"
-            element={
-              <RequireOnboarding>
-                <Analytics />
-              </RequireOnboarding>
-            }
-          />
-          <Route
-            path="/import"
-            element={
-              <RequireOnboarding>
-                <Import />
-              </RequireOnboarding>
-            }
-          />
-          <Route
-            path="/notifications"
-            element={
-              <RequireOnboarding>
-                <Notifications />
-              </RequireOnboarding>
-            }
-          />
-          <Route path="/transactions" element={<Transactions />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/settings/team" element={<TeamSettings />} />
-          <Route path="/settings/billing" element={<Billing />} />
-          <Route
-            path="/subscriptions"
-            element={<Navigate to="/dashboard" replace />}
-          />
-          <Route
-            path="/team/advanced"
-            element={
-              <RequireOnboarding>
-                <TeamAdvanced />
-              </RequireOnboarding>
-            }
-          />
-        </Route>
-        <Route path="/onboarding" element={<OnboardingPage />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
   );
 }

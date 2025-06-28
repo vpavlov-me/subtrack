@@ -7,13 +7,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { useAuth } from '@workos-inc/authkit-react';
-import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/app/AuthProvider';
 import { useCurrency } from '@/features/currency/CurrencyProvider';
 import { FeedbackWidget } from '@/components/FeedbackWidget';
 import { Navigation, SkipLink } from '@/components/ui/navigation';
 import { MobileNav, BottomNav } from '@/components/ui/mobile-nav';
+import { TestUserSwitcher } from '@/components/TestUserSwitcher';
 
 const navigationItems = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -37,12 +38,11 @@ const mobileNavItems = [
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { dark, toggle } = useTheme();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const { userCurrency, setUserCurrency, availableCurrencies } = useCurrency();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    signOut();
+    await signOut();
   };
 
   return (
@@ -61,6 +61,9 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-4">
             {/* Mobile Navigation */}
             <MobileNav items={mobileNavItems} />
+
+            {/* Test User Switcher */}
+            <TestUserSwitcher />
 
             {/* Currency Switcher */}
             <DropdownMenu>
@@ -115,8 +118,12 @@ export default function Layout({ children }: { children: ReactNode }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem disabled className="text-xs text-muted-foreground">
+                  {user?.email}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={handleSignOut}>
-                  Logout
+                  Выйти
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

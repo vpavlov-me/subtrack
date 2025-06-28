@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { test, expect } from '@playwright/test';
+import { loginAsAdmin, loginAsMember, logout } from './utils/login';
 
 test.describe('SubTrack E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -12,15 +13,9 @@ test.describe('SubTrack E2E Tests', () => {
     await expect(page.locator('h1')).toContainText(/subscriptions/i);
   });
 
-  test('complete subscription CRUD flow', async ({ page }) => {
-    // Login (assuming demo user exists)
-    await page.goto('/login');
-    await page.fill('input[type="email"]', 'demo@subtrack.dev');
-    await page.fill('input[type="password"]', 'demo123');
-    await page.click('button[type="submit"]');
-
-    // Wait for dashboard to load
-    await page.waitForURL('/dashboard');
+  test('complete subscription CRUD flow as admin', async ({ page }) => {
+    // Login as admin test user
+    await loginAsAdmin(page);
 
     // Check initial state
     await expect(page.locator('h1')).toContainText('Your Subscriptions');
@@ -53,16 +48,37 @@ test.describe('SubTrack E2E Tests', () => {
 
     // Verify deletion
     await expect(page.locator('text=Updated Test Service')).not.toBeVisible();
+
+    // Logout
+    await logout(page);
+  });
+
+  test('complete subscription CRUD flow as member', async ({ page }) => {
+    // Login as member test user
+    await loginAsMember(page);
+
+    // Check initial state
+    await expect(page.locator('h1')).toContainText('Your Subscriptions');
+
+    // Add new subscription
+    await page.click('button:has-text("Add Subscription")');
+    await page.fill('input[name="name"]', 'Member Test Service');
+    await page.fill('input[name="price"]', '19.99');
+    await page.selectOption('select[name="billingCycle"]', 'monthly');
+    await page.fill('input[name="nextBillingDate"]', '2024-02-01');
+    await page.click('button[type="submit"]');
+
+    // Verify subscription was added
+    await expect(page.locator('text=Member Test Service')).toBeVisible();
+    await expect(page.locator('text=$19.99')).toBeVisible();
+
+    // Logout
+    await logout(page);
   });
 
   test('free plan limit enforcement', async ({ page }) => {
-    // Login
-    await page.goto('/login');
-    await page.fill('input[type="email"]', 'demo@subtrack.dev');
-    await page.fill('input[type="password"]', 'demo123');
-    await page.click('button[type="submit"]');
-
-    await page.waitForURL('/dashboard');
+    // Login as admin
+    await loginAsAdmin(page);
 
     // Try to add more than 5 subscriptions
     for (let i = 1; i <= 6; i++) {
@@ -81,16 +97,14 @@ test.describe('SubTrack E2E Tests', () => {
         ).toBeVisible();
       }
     }
+
+    // Logout
+    await logout(page);
   });
 
   test('dashboard KPIs update correctly', async ({ page }) => {
-    // Login
-    await page.goto('/login');
-    await page.fill('input[type="email"]', 'demo@subtrack.dev');
-    await page.fill('input[type="password"]', 'demo123');
-    await page.click('button[type="submit"]');
-
-    await page.waitForURL('/dashboard');
+    // Login as admin
+    await loginAsAdmin(page);
 
     // Check KPI cards exist
     await expect(page.locator('text=Monthly Recurring Revenue')).toBeVisible();
@@ -116,6 +130,9 @@ test.describe('SubTrack E2E Tests', () => {
       .locator('[data-testid="mrr-value"]')
       .textContent();
     expect(updatedMRR).not.toBe(initialMRR);
+
+    // Logout
+    await logout(page);
   });
 
   test('onboarding flow completion', async ({ page }) => {
@@ -139,5 +156,23 @@ test.describe('SubTrack E2E Tests', () => {
     // Should redirect to dashboard
     await page.waitForURL('/dashboard');
     await expect(page.locator('h1')).toContainText('Your Subscriptions');
+  });
+
+  test('test user isolation', async ({ page }) => {
+    // Login as admin and create data
+    await loginAsAdmin(page);
+    await page.click('button:has-text("Add Subscription")');
+    await page.fill('input[name="name"]', 'Admin Only Service');
+    await page.fill('input[name="price"]', '99.99');
+    await page.selectOption('select[name="billingCycle"]', 'monthly');
+    await page.fill('input[name="nextBillingDate"]', '2024-02-01');
+    await page.click('button[type="submit"]');
+    await expect(page.locator('text=Admin Only Service')).toBeVisible();
+    await logout(page);
+
+    // Login as member and verify data isolation
+    await loginAsMember(page);
+    await expect(page.locator('text=Admin Only Service')).not.toBeVisible();
+    await logout(page);
   });
 });
