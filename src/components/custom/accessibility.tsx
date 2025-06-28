@@ -191,48 +191,21 @@ export function ErrorBoundary({
   const [error, setError] = React.useState<Error | null>(null);
 
   React.useEffect(() => {
-    const handleError = (error: Error, errorInfo: React.ErrorInfo) => {
+    const handleError = (event: ErrorEvent) => {
+      const error = new Error(event.message);
       setHasError(true);
       setError(error);
-      onError?.(error, errorInfo);
+      onError?.(error, { componentStack: '' });
     };
 
     // Add global error handler
-    window.addEventListener('error', event => {
-      handleError(event.error, { componentStack: '' });
-    });
-
-    return () => {
-      window.removeEventListener('error', event => {
-        handleError(event.error, { componentStack: '' });
-      });
-    };
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
   }, [onError]);
 
   if (hasError && error) {
-    if (fallback) {
-      const FallbackComponent = fallback;
-      return <FallbackComponent error={error} />;
-    }
-
-    return (
-      <div
-        className="p-4 border border-destructive bg-destructive/10 rounded-md"
-        role="alert"
-      >
-        <h2 className="text-lg font-semibold text-destructive mb-2">
-          Something went wrong
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">{error.message}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="text-sm text-primary hover:underline focus-visible-ring"
-        >
-          Reload page
-        </button>
-      </div>
-    );
+    return fallback ? React.createElement(fallback, { error }) : <div>Something went wrong</div>;
   }
 
   return <>{children}</>;
-}
+} 

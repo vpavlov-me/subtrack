@@ -17,117 +17,78 @@ import {
 } from '@/components/ui/select';
 import { DateRange } from './DateRangePicker';
 import { toast } from 'sonner';
+import { Label } from '@/components/ui/label';
 
 interface ReportExporterProps {
+  reportType: string;
   dateRange: DateRange;
-  data: any;
-  className?: string;
+  onExport: (format: string) => Promise<void>;
 }
 
-type ExportFormat = 'csv' | 'pdf' | 'json';
-type ReportType = 'spending' | 'trends' | 'categories' | 'subscriptions';
-
-const REPORT_TYPES = [
-  {
-    value: 'spending',
-    label: 'Spending Report',
-    description: 'Detailed spending breakdown by date and category',
-    icon: BarChart3,
-  },
-  {
-    value: 'trends',
-    label: 'Trend Analysis',
-    description: 'Spending trends and patterns over time',
-    icon: TrendingUp,
-  },
-  {
-    value: 'categories',
-    label: 'Category Report',
-    description: 'Spending by category with percentages',
-    icon: FileText,
-  },
-  {
-    value: 'subscriptions',
-    label: 'Subscription Summary',
-    description: 'All active subscriptions and costs',
-    icon: Download,
-  },
-];
-
 export function ReportExporter({
+  reportType,
   dateRange,
-  data,
-  className,
+  onExport,
 }: ReportExporterProps) {
-  const [selectedType, setSelectedType] = useState<ReportType>('spending');
-  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('csv');
   const [isExporting, setIsExporting] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState<'csv' | 'json'>('csv');
 
   const handleExport = async () => {
     setIsExporting(true);
-
     try {
-      // Simulate export process
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const fileName = `subtrack-${selectedType}-${new Date().toISOString().split('T')[0]}.${selectedFormat}`;
-
-      // In a real implementation, this would generate the actual file
-      const blob = new Blob(['Report data would be here'], {
-        type: 'text/plain',
-      });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      toast.success(`Report exported as ${fileName}`);
+      await onExport(selectedFormat);
     } catch (error) {
-      toast.error('Failed to export report');
+      console.error('Export failed:', error);
     } finally {
       setIsExporting(false);
     }
   };
 
-  const selectedReport = REPORT_TYPES.find(r => r.value === selectedType);
-  const Icon = selectedReport?.icon || FileText;
+  const reportOptions = [
+    {
+      value: 'spending',
+      label: 'Spending Report',
+      description: 'Monthly spending breakdown by category',
+    },
+    {
+      value: 'subscriptions',
+      label: 'Subscriptions Report',
+      description: 'Active subscriptions and their details',
+    },
+    {
+      value: 'trends',
+      label: 'Trends Report',
+      description: 'Spending trends over time',
+    },
+  ];
+
+  const selectedReport = reportOptions.find(r => r.value === reportType);
 
   return (
-    <Card className={className}>
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Download className="h-5 w-5" />
-          Export Reports
+          Export Report
         </CardTitle>
         <CardDescription>
-          Export your subscription data and analytics in various formats
+          Export your data in CSV or JSON format
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Report Type Selection */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Report Type</label>
-          <Select
-            value={selectedType}
-            onValueChange={(value: ReportType) => setSelectedType(value)}
-          >
+          <Label>Report Type</Label>
+          <Select value={reportType} onValueChange={() => {}}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {REPORT_TYPES.map(report => (
-                <SelectItem key={report.value} value={report.value}>
-                  <div className="flex items-center gap-2">
-                    <report.icon className="h-4 w-4" />
-                    <div>
-                      <div className="font-medium">{report.label}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {report.description}
-                      </div>
+              {reportOptions.map(option => (
+                <SelectItem key={option.value} value={option.value}>
+                  <div>
+                    <div className="font-medium">{option.label}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {option.description}
                     </div>
                   </div>
                 </SelectItem>
@@ -136,36 +97,21 @@ export function ReportExporter({
           </Select>
         </div>
 
-        {/* Format Selection */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Export Format</label>
-          <Select
-            value={selectedFormat}
-            onValueChange={(value: ExportFormat) => setSelectedFormat(value)}
-          >
+          <Label>Export Format</Label>
+          <Select value={selectedFormat} onValueChange={(value: 'csv' | 'json') => setSelectedFormat(value)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="csv">CSV (Excel compatible)</SelectItem>
-              <SelectItem value="pdf">PDF (Printable)</SelectItem>
-              <SelectItem value="json">JSON (Data export)</SelectItem>
+              <SelectItem value="csv">CSV</SelectItem>
+              <SelectItem value="json">JSON</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {/* Date Range Info */}
-        <div className="rounded-lg bg-muted p-3">
-          <div className="text-sm font-medium">Date Range</div>
-          <div className="text-sm text-muted-foreground">
-            {dateRange.from.toLocaleDateString()} -{' '}
-            {dateRange.to.toLocaleDateString()}
-          </div>
-        </div>
-
-        {/* Export Button */}
-        <Button
-          onClick={handleExport}
+        <Button 
+          onClick={handleExport} 
           disabled={isExporting}
           className="w-full"
         >
@@ -177,7 +123,7 @@ export function ReportExporter({
           ) : (
             <>
               <Download className="mr-2 h-4 w-4" />
-              Export {selectedReport?.label}
+              Export {selectedFormat.toUpperCase()}
             </>
           )}
         </Button>

@@ -1,14 +1,19 @@
 import { Badge } from '@/components/ui/badge';
+
+const roleVariants = {
+  owner: 'bg-emerald-500 text-white',
+  admin: 'bg-sky-500 text-white', 
+  member: 'bg-muted text-muted-foreground'
+};
+
 export default function RoleBadge({
   role,
 }: {
   role: 'owner' | 'admin' | 'member';
 }) {
-  const color =
-    role === 'owner'
-      ? 'bg-emerald-500'
-      : role === 'admin'
-        ? 'bg-sky-500'
-        : 'bg-zinc-500';
-  return <Badge className={`${color} text-white capitalize`}>{role}</Badge>;
+  return (
+    <Badge className={`${roleVariants[role]} capitalize`}>
+      {role}
+    </Badge>
+  );
 }

@@ -14,10 +14,9 @@ interface MobileNavItem {
 
 interface MobileNavProps {
   items: MobileNavItem[];
-  className?: string;
 }
 
-export function MobileNav({ items, className }: MobileNavProps) {
+export function MobileNav({ items }: MobileNavProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
@@ -107,4 +106,4 @@ export function BottomNav({ items }: MobileNavProps) {
       </div>
     </nav>
   );
-}
+} 

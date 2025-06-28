@@ -12,8 +12,8 @@ import {
 import { useAuth } from '@/app/AuthProvider';
 import { useCurrency } from '@/features/currency/CurrencyProvider';
 import { FeedbackWidget } from '@/components/FeedbackWidget';
-import { Navigation, SkipLink } from '@/components/ui/navigation';
-import { MobileNav, BottomNav } from '@/components/ui/mobile-nav';
+import { Navigation, SkipLink } from '@/components/custom/navigation';
+import { MobileNav, BottomNav } from '@/components/custom/mobile-nav';
 import { TestUserSwitcher } from '@/components/TestUserSwitcher';
 
 const navigationItems = [

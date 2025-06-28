@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -20,6 +20,14 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DateRange } from './DateRangePicker';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 interface TrendData {
   date: string;
@@ -38,6 +46,28 @@ export function TrendAnalysis({
   data,
   className,
 }: TrendAnalysisProps) {
+  const [selectedMetric, setSelectedMetric] = useState<'spending' | 'subscriptions'>('spending');
+  const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly' | 'monthly'>('monthly');
+
+  const metrics = [
+    {
+      value: 'spending',
+      label: 'Total Spending',
+      description: 'Track your spending over time',
+    },
+    {
+      value: 'subscriptions',
+      label: 'Active Subscriptions',
+      description: 'Number of active subscriptions',
+    },
+  ];
+
+  const periods = [
+    { value: 'daily', label: 'Daily' },
+    { value: 'weekly', label: 'Weekly' },
+    { value: 'monthly', label: 'Monthly' },
+  ];
+
   const trends = useMemo(() => {
     if (data.length < 2) return null;
 
@@ -93,6 +123,81 @@ export function TrendAnalysis({
 
   return (
     <div className={className}>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Trend Analysis
+          </CardTitle>
+          <CardDescription>
+            Analyze spending patterns and trends over time
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Metric</Label>
+              <Select value={selectedMetric} onValueChange={(value: 'spending' | 'subscriptions') => setSelectedMetric(value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {metrics.map(metric => (
+                    <SelectItem key={metric.value} value={metric.value}>
+                      <div>
+                        <div className="font-medium">{metric.label}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {metric.description}
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Time Period</Label>
+              <Select value={selectedPeriod} onValueChange={(value: 'daily' | 'weekly' | 'monthly') => setSelectedPeriod(value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {periods.map(period => (
+                    <SelectItem key={period.value} value={period.value}>
+                      {period.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="h-64 rounded-lg bg-muted flex items-center justify-center">
+            <div className="text-center text-muted-foreground">
+              <TrendingUp className="h-8 w-8 mx-auto mb-2" />
+              <p>Chart will be displayed here</p>
+              <p className="text-sm">Showing {selectedMetric} trends ({selectedPeriod})</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <div className="text-2xl font-bold text-green-600">+12.5%</div>
+              <div className="text-sm text-muted-foreground">vs last period</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold">$1,234</div>
+              <div className="text-sm text-muted-foreground">Average</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-blue-600">$5,678</div>
+              <div className="text-sm text-muted-foreground">Total</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Trend Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card>

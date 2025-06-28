@@ -140,7 +140,6 @@ export function LazyImage({
   onError,
 }: LazyImageProps) {
   const [isLoaded, setIsLoaded] = React.useState(false);
-  const [hasError, setHasError] = React.useState(false);
   const imgRef = React.useRef<HTMLImageElement>(null);
 
   React.useEffect(() => {
@@ -178,9 +177,8 @@ export function LazyImage({
         onLoad?.();
       }}
       onError={() => {
-        setHasError(true);
         onError?.();
       }}
     />
   );
-}
+} 

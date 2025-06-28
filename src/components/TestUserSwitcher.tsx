@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { useAuth } from '@/app/AuthProvider';
+import { useState } from 'react';
+import { useUser } from '@/hooks/useUser';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { User, ChevronDown, TestTube } from 'lucide-react';
+import { useAuth } from '@/app/AuthProvider';
+import { supabase } from '@/lib/supabase';
 
 interface TestUser {
   email: string;
@@ -86,38 +86,15 @@ export function TestUserSwitcher() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>Test Users</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          
-          {currentTestUser ? (
-            <>
-              <DropdownMenuItem disabled className="text-sm text-muted-foreground">
-                Currently logged in as: {currentTestUser.email}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                Logout
-              </DropdownMenuItem>
-            </>
-          ) : (
-            testUsers.map((testUser) => (
-              <DropdownMenuItem
-                key={testUser.email}
-                onClick={() => handleTestUserLogin(testUser)}
-                className="flex items-center gap-2"
-              >
-                <User className="h-4 w-4" />
-                <div className="flex flex-col">
-                  <span className="font-medium">{testUser.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {testUser.email} ({testUser.role})
-                  </span>
-                </div>
-              </DropdownMenuItem>
-            ))
-          )}
-          
-          <DropdownMenuSeparator />
+          <DropdownMenuItem disabled className="text-sm text-muted-foreground">
+            Test Users
+          </DropdownMenuItem>
+          <DropdownMenuItem disabled className="text-sm text-muted-foreground">
+            Currently logged in as: {currentTestUser?.email}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout}>
+            Logout
+          </DropdownMenuItem>
           <DropdownMenuItem disabled className="text-xs text-muted-foreground">
             Password: test123456
           </DropdownMenuItem>

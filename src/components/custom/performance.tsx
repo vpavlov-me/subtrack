@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
 
 // Memoized component wrapper
 export function memo<T extends React.ComponentType<any>>(
@@ -206,14 +205,14 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
 
 // Previous value hook
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = React.useRef<T>();
+  const ref = React.useRef<T | undefined>(undefined);
   React.useEffect(() => {
     ref.current = value;
-  });
+  }, [value]);
   return ref.current;
 }
 
-// Mounted state hook
+// Mounted hook
 export function useMounted() {
   const [mounted, setMounted] = React.useState(false);
 
@@ -232,9 +231,5 @@ export function useErrorBoundary() {
     setError(error);
   }, []);
 
-  const resetError = React.useCallback(() => {
-    setError(null);
-  }, []);
-
-  return { error, handleError, resetError };
-}
+  return { error, handleError };
+} 
